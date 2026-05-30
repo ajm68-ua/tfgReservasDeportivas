@@ -19,6 +19,7 @@ Permite a los deportistas reservar pistas, unirse a partidas abiertas, chatear c
 erDiagram
     Usuarios {
         int id PK
+        int centro_id FK "null si DEPORTISTA"
         varchar nombre
         varchar apellidos
         varchar email UK
@@ -96,6 +97,7 @@ erDiagram
     }
 
     Centros_Deportivos ||--o{ Pistas : "tiene"
+    Centros_Deportivos ||--o{ Usuarios : "administrado por"
     Pistas ||--o{ Reservas : "se reserva en"
     Usuarios ||--o{ Reservas : "organiza"
     Reservas ||--o{ Participantes_Partida : "tiene"
