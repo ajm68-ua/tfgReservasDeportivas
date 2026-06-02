@@ -25,6 +25,7 @@ erDiagram
         varchar email UK
         varchar password
         varchar telefono
+        varchar ciudad
         enum rol
         datetime fecha_registro
         decimal valoracion_media
@@ -34,6 +35,7 @@ erDiagram
         int id PK
         varchar nombre
         varchar direccion
+        varchar ciudad
         varchar telefono
         time horario_apertura
         time horario_cierre
