@@ -26,6 +26,7 @@ erDiagram
         varchar password
         varchar telefono
         varchar ciudad
+        enum nivel
         enum rol
         datetime fecha_registro
         decimal valoracion_media
@@ -60,6 +61,7 @@ erDiagram
         time hora_fin
         decimal precio_total
         enum estado_pago
+        enum nivel
         boolean es_abierta
         datetime fecha_creacion
     }
@@ -119,3 +121,4 @@ erDiagram
 | `RolUsuario` | `DEPORTISTA` · `ADMINISTRADOR_GENERAL` · `ADMINISTRADOR_CENTRO` |
 | `Deporte` | `PADEL` · `TENIS` · `FUTBOL_7` · `FUTBOL_SALA` |
 | `EstadoPago` | `PENDIENTE` · `PAGADO` · `REEMBOLSADO` · `PAGO_EN_LOCAL` |
+| `Nivel` | `PRINCIPIANTE` · `INTERMEDIO` · `AVANZADO` · `PROFESIONAL` |
