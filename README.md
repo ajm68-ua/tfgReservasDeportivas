@@ -22,6 +22,7 @@ erDiagram
         int centro_id FK "null si DEPORTISTA"
         varchar nombre
         varchar apellidos
+        varchar foto
         varchar email UK
         varchar password
         varchar telefono
