@@ -36,6 +36,7 @@ erDiagram
     Centros_Deportivos {
         int id PK
         varchar nombre
+        varchar foto
         varchar direccion
         varchar ciudad
         varchar telefono
