@@ -25,7 +25,7 @@ public class ResenaUsuario {
 
     private Integer puntuacion;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     private String comentario;
 
     @Column(name = "fecha_creacion", updatable = false)

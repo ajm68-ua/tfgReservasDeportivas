@@ -1,5 +1,6 @@
 package com.tfg.reservasdeportivas.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tfg.reservasdeportivas.model.enums.Nivel;
 import com.tfg.reservasdeportivas.model.enums.RolUsuario;
 import jakarta.persistence.*;
@@ -25,6 +26,7 @@ public class Usuario {
     @Column(unique = true)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String telefono;
     private String ciudad;

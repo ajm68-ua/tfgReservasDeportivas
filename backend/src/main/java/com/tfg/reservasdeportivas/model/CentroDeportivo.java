@@ -29,7 +29,7 @@ public class CentroDeportivo {
     private List<Pista> pistas = new ArrayList<>();
 
     @OneToMany(mappedBy = "centro")
-    private List<Usuario> administradores = new ArrayList<>();
+    private List<Usuario> usuarios = new ArrayList<>();
 
     public CentroDeportivo() {
     }
@@ -106,11 +106,11 @@ public class CentroDeportivo {
         this.pistas = pistas;
     }
 
-    public List<Usuario> getAdministradores() {
-        return administradores;
+    public List<Usuario> getUsuarios() {
+        return usuarios;
     }
 
-    public void setAdministradores(List<Usuario> administradores) {
-        this.administradores = administradores;
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
     }
 }

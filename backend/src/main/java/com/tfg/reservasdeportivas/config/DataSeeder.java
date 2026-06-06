@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
-import java.util.List;
 
 @Configuration
 public class DataSeeder {

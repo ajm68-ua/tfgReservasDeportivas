@@ -17,7 +17,7 @@ public class Notificacion {
 
     private String titulo;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     private String mensaje;
 
     private Boolean leido;

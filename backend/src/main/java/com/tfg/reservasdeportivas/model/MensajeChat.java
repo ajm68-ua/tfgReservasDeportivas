@@ -19,7 +19,7 @@ public class MensajeChat {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     private String mensaje;
 
     @Column(name = "fecha_envio", updatable = false)
