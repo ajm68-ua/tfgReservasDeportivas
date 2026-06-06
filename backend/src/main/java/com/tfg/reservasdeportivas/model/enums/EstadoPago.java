@@ -1,4 +1,7 @@
 package com.tfg.reservasdeportivas.model.enums;
 
-public enum Deporte {
+public enum EstadoPago {
+    PENDIENTE,
+    PAGADO,
+    CANCELADO
 }
