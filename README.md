@@ -120,7 +120,7 @@ erDiagram
 
 | Enum | Valores |
 |---|---|
-| `RolUsuario` | `DEPORTISTA` · `ADMINISTRADOR_GENERAL` · `ADMINISTRADOR_CENTRO` |
+| `RolUsuario` | `DEPORTISTA` · `ADMINISTRADOR_CENTRO` |
 | `Deporte` | `PADEL` · `TENIS` · `FUTBOL` · `BALONCESTO` · `SQUASH` · `BADMINTON` |
 | `EstadoPago` | `PENDIENTE` · `PAGADO` · `CANCELADO` |
 | `Nivel` | `PRINCIPIANTE` · `INTERMEDIO` · `AVANZADO` · `PROFESIONAL` |
