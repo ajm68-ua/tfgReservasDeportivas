@@ -49,6 +49,33 @@ public class DataSeeder {
             centro2.setHorarioCierre(LocalTime.of(23, 0));
             centroRepo.save(centro2);
 
+            CentroDeportivo centro3 = new CentroDeportivo();
+            centro3.setNombre("CENTRO DEPORTIVO 3");
+            centro3.setCiudad("Murcia");
+            centro3.setDireccion("Calle ejemplo 3");
+            centro3.setTelefono("987654321");
+            centro3.setHorarioApertura(LocalTime.of(9, 0));
+            centro3.setHorarioCierre(LocalTime.of(23, 0));
+            centroRepo.save(centro3);
+
+            CentroDeportivo centro4 = new CentroDeportivo();
+            centro4.setNombre("CENTRO DEPORTIVO 4");
+            centro4.setCiudad("Elda");
+            centro4.setDireccion("Calle ejemplo 4");
+            centro4.setTelefono("987654321");
+            centro4.setHorarioApertura(LocalTime.of(9, 0));
+            centro4.setHorarioCierre(LocalTime.of(23, 0));
+            centroRepo.save(centro4);
+
+            CentroDeportivo centro5 = new CentroDeportivo();
+            centro5.setNombre("CENTRO DEPORTIVO 5");
+            centro5.setCiudad("Crevillente");
+            centro5.setDireccion("Calle ejemplo 5");
+            centro5.setTelefono("987654321");
+            centro5.setHorarioApertura(LocalTime.of(9, 0));
+            centro5.setHorarioCierre(LocalTime.of(23, 0));
+            centroRepo.save(centro5);
+
             // PISTAS
             Pista pista1 = new Pista();
             pista1.setCentro(centro1);
