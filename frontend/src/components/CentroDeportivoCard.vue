@@ -1,4 +1,6 @@
 <script setup>
+import { RouterLink } from 'vue-router'
+
 defineProps({
   centro: {
     type: Object,
@@ -46,9 +48,11 @@ function getImagen(foto) {
         <span v-else>Horario no disponible</span>
       </div>
 
-      <button class="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">
-        Ver disponibilidad
-      </button>
+      <RouterLink :to="`/centros/${centro.id}`" class="mt-auto">
+        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">
+          Ver disponibilidad
+        </button>
+      </RouterLink>
     </div>
   </div>
 </template>

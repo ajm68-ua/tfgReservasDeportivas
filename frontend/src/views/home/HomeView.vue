@@ -2,13 +2,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
-import logoLfg from '@/assets/images/Logo LFGHub.png'
 import CentroDeportivoCard from '@/components/CentroDeportivoCard.vue'
 
 const router = useRouter()
 const deportes = ['Pádel', 'Tenis', 'Fútbol', 'Baloncesto', 'Squash', 'Bádminton']
 const deporteSeleccionado = ref('')
 const fechaSeleccionada = ref('')
+const hoy = new Date().toISOString().split('T')[0]
 
 const centros = ref([])
 const cargando = ref(true)
@@ -21,6 +21,8 @@ const centrosMostrados = computed(() => {
   const inicio = paginaActual.value * centrosPorPagina
   return centros.value.slice(inicio, inicio + centrosPorPagina)
 })
+
+const hayVariasPaginas = computed(() => centros.value.length > centrosPorPagina)
 
 function paginaAnterior() {
   if (paginaActual.value > 0) {
@@ -95,6 +97,7 @@ onMounted(async () => {
             <input
               type="date"
               v-model="fechaSeleccionada"
+              :min="hoy"
               class="bg-transparent text-gray-600 text-sm focus:outline-none cursor-pointer w-full"
             />
           </div>
@@ -133,6 +136,7 @@ onMounted(async () => {
 
           <div v-else class="relative flex items-center">
             <button
+              v-if="hayVariasPaginas"
               @click="paginaAnterior"
               class="absolute -left-8 md:-left-12 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-black font-extrabold text-xl hover:bg-gray-50 transition z-10"
             >
@@ -148,6 +152,7 @@ onMounted(async () => {
             </div>
 
             <button
+              v-if="hayVariasPaginas"
               @click="paginaSiguiente"
               class="absolute -right-8 md:-right-12 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-black font-extrabold text-xl hover:bg-gray-50 transition z-10"
             >
