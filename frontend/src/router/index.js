@@ -1,47 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// Auth
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 
-// Home
 import HomeView from '@/views/home/HomeView.vue'
 
-// Centros
 import CentrosListView from '@/views/centros/CentrosListView.vue'
 import CentroDetailView from '@/views/centros/CentroDetailView.vue'
 
-// Pistas
 import PistasListView from '@/views/pistas/PistasListView.vue'
 import PistaDetailView from '@/views/pistas/PistaDetailView.vue'
 
-// Reservas
 import ReservaCreateView from '@/views/reservas/ReservaCreateView.vue'
 import ReservasListView from '@/views/reservas/ReservasListView.vue'
 import ReservaDetailView from '@/views/reservas/ReservaDetailView.vue'
 
-// Partidas
 import PartidasAbiertasView from '@/views/partidas/PartidasAbiertasView.vue'
 
-// Chat
 import ChatReservaView from '@/views/chat/ChatReservaView.vue'
 
-// Reseñas
 import ResenasView from '@/views/resenas/ResenasView.vue'
 
-// Notificaciones
 import NotificacionesView from '@/views/notificaciones/NotificacionesView.vue'
 
-// Perfil
 import PerfilView from '@/views/perfil/PerfilView.vue'
 
-// Admin
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminPistasView from '@/views/admin/AdminPistasView.vue'
 import AdminReservasView from '@/views/admin/AdminReservasView.vue'
 
 const routes = [
-  // --- Rutas públicas ---
   {
     path: '/login',
     name: 'login',
@@ -49,13 +37,12 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
-    path: '/register',
-    name: 'register',
+    path: '/registro',
+    name: 'registro',
     component: RegisterView,
     meta: { requiresAuth: false },
   },
 
-  // --- Rutas autenticadas ---
   {
     path: '/',
     name: 'home',
@@ -135,7 +122,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
 
-  // --- Rutas de administración (ADMINISTRADOR_CENTRO) ---
   {
     path: '/admin',
     name: 'admin-dashboard',
