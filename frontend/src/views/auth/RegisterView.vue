@@ -233,6 +233,12 @@ async function registrar() {
             Inicia sesión
           </router-link>
         </p>
+        <p class="text-center text-sm text-gray-500 mt-1">
+          ¿Eres un centro deportivo?
+          <router-link to="/registro-centro" class="text-blue-600 font-semibold hover:text-blue-500 transition ml-1">
+            ¡Haz click aquí!
+          </router-link>
+        </p>
       </template>
 
     </div>

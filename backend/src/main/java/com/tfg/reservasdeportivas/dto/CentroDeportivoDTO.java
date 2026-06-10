@@ -3,16 +3,31 @@ package com.tfg.reservasdeportivas.dto;
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Objects;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class CentroDeportivoDTO implements Serializable {
 
     private Integer id;
+    
+    @NotBlank(message = "El nombre del centro es obligatorio")
     private String nombre;
+    
     private String foto;
+    
+    @NotBlank(message = "La dirección es obligatoria")
     private String direccion;
+    
+    @NotBlank(message = "La ciudad es obligatoria")
     private String ciudad;
+    
+    @NotBlank(message = "El teléfono es obligatorio")
     private String telefono;
+    
+    @NotNull(message = "El horario de apertura es obligatorio")
     private LocalTime horarioApertura;
+    
+    @NotNull(message = "El horario de cierre es obligatorio")
     private LocalTime horarioCierre;
 
     public CentroDeportivoDTO() {

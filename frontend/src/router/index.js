@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
+import RegisterCentroView from '@/views/auth/RegisterCentroView.vue'
 
 import HomeView from '@/views/home/HomeView.vue'
 
@@ -40,6 +41,12 @@ const routes = [
     path: '/registro',
     name: 'registro',
     component: RegisterView,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/registro-centro',
+    name: 'registro-centro',
+    component: RegisterCentroView,
     meta: { requiresAuth: false },
   },
 
