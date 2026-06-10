@@ -3,6 +3,10 @@ package com.tfg.reservasdeportivas.dto;
 import com.tfg.reservasdeportivas.model.enums.Nivel;
 import com.tfg.reservasdeportivas.model.enums.RolUsuario;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,10 +16,22 @@ public class UsuarioDTO implements Serializable {
 
     private Integer id;
     private Integer centroId;
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
+    @NotBlank(message = "Los apellidos son obligatorios")
     private String apellidos;
+
     private String foto;
+
+    @NotBlank(message = "El correo electrónico es obligatorio")
+    @Email(message = "El formato del correo no es válido")
     private String email;
+
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 4, message = "La contraseña debe tener al menos 4 caracteres")
+    private String password;
+
     private String telefono;
     private String ciudad;
     private Nivel nivel;
@@ -43,6 +59,9 @@ public class UsuarioDTO implements Serializable {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }

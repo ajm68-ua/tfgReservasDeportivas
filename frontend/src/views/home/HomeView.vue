@@ -67,15 +67,15 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen bg-white font-sans flex flex-col">
-    <section class="bg-[#222a36] text-white py-24 px-8">
+    <section class="bg-gray-900 text-white py-24 px-8">
       <div class="max-w-6xl mx-auto w-full">
         <h1 class="text-5xl md:text-[4rem] font-extrabold tracking-tight mb-2 leading-tight">
           Tu pista lista en un clic.
         </h1>
-        <h2 class="text-5xl md:text-[4rem] font-extrabold tracking-tight text-[#4f8ff7] mb-6 leading-tight">
+        <h2 class="text-5xl md:text-[4rem] font-extrabold tracking-tight text-blue-500 mb-6 leading-tight">
           Juega cuando quieras.
         </h2>
-        <p class="text-[#a0aabf] text-lg max-w-xl mb-12 leading-relaxed">
+        <p class="text-gray-400 text-lg max-w-xl mb-12 leading-relaxed">
           Encuentra pistas deportivas en los mejores centros de tu ciudad. Organiza partidas abiertas o reserva en privado.
         </p>
 
@@ -115,7 +115,7 @@ onMounted(async () => {
     <section class="py-16 px-8 flex-grow bg-white relative">
       <div class="max-w-6xl mx-auto w-full">
         <div class="bg-gray-100 rounded-3xl py-10 px-12 md:px-20 relative">
-          <h3 class="text-2xl md:text-3xl font-extrabold text-[#232323] mb-8">
+          <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-8">
             Descubre los centros deportivos de tu ciudad
           </h3>
 
