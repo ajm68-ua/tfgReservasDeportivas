@@ -38,6 +38,13 @@ function validar() {
   if (form.password.length < 4) return 'La contraseña debe tener al menos 4 caracteres.'
   if (form.password !== form.confirmarPassword) return 'Las contraseñas no coinciden.'
   
+  if (form.telefono && form.telefono.trim()) {
+    const telefonoRegex = /^[0-9\s\+\-]{9,15}$/
+    if (!telefonoRegex.test(form.telefono)) {
+      return 'Introduce un teléfono válido.'
+    }
+  }
+
   if (form.ciudad && form.ciudad.trim()) {
     const ciudadRegex = /^[a-zA-ZÀ-ÿ\s\-\']+$/
     if (form.ciudad.trim().length < 2 || !ciudadRegex.test(form.ciudad)) {
