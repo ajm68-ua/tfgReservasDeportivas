@@ -31,9 +31,20 @@ const form = reactive({
 function validar() {
   if (!form.nombre.trim()) return 'El nombre es obligatorio.'
   if (!form.apellidos.trim()) return 'Los apellidos son obligatorios.'
-  if (!form.email.trim() || !form.email.includes('@')) return 'Introduce un correo electrónico válido.'
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!form.email.trim() || !emailRegex.test(form.email)) return 'Introduce un correo electrónico válido.'
+  
   if (form.password.length < 4) return 'La contraseña debe tener al menos 4 caracteres.'
   if (form.password !== form.confirmarPassword) return 'Las contraseñas no coinciden.'
+  
+  if (form.ciudad && form.ciudad.trim()) {
+    const ciudadRegex = /^[a-zA-ZÀ-ÿ\s\-\']+$/
+    if (form.ciudad.trim().length < 2 || !ciudadRegex.test(form.ciudad)) {
+      return 'Introduce una ciudad válida (solo letras y espacios).'
+    }
+  }
+
   if (!form.nivel) return 'Selecciona tu nivel de juego.'
   return null
 }

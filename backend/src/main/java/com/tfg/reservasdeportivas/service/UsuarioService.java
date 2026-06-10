@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -20,6 +21,9 @@ public class UsuarioService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional
     public UsuarioDTO registrar(UsuarioDTO dto) {
         if (usuarioRepository.existsByEmail(dto.getEmail())) {
@@ -28,6 +32,8 @@ public class UsuarioService {
 
         Usuario usuario = modelMapper.map(dto, Usuario.class);
         usuario.setRol(RolUsuario.DEPORTISTA);
+        
+        usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         Usuario guardado = usuarioRepository.save(usuario);
         return modelMapper.map(guardado, UsuarioDTO.class);
