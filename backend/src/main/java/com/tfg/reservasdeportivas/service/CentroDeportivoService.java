@@ -1,9 +1,17 @@
 package com.tfg.reservasdeportivas.service;
 
 import com.tfg.reservasdeportivas.dto.CentroDeportivoDTO;
+import com.tfg.reservasdeportivas.dto.RegistroCentroRequestDTO;
+import com.tfg.reservasdeportivas.model.CentroDeportivo;
+import com.tfg.reservasdeportivas.model.Usuario;
+import com.tfg.reservasdeportivas.model.enums.RolUsuario;
 import com.tfg.reservasdeportivas.repository.CentroDeportivoRepository;
+import com.tfg.reservasdeportivas.repository.UsuarioRepository;
+import com.tfg.reservasdeportivas.exception.CentroAlreadyExistsException;
+import com.tfg.reservasdeportivas.exception.EmailAlreadyExistsException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +28,12 @@ public class CentroDeportivoService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional(readOnly = true)
     public List<CentroDeportivoDTO> findAll() {
         return centroDeportivoRepository.findAll()
@@ -32,5 +46,32 @@ public class CentroDeportivoService {
     public Optional<CentroDeportivoDTO> findById(Integer id) {
         return centroDeportivoRepository.findById(id)
                 .map(centro -> modelMapper.map(centro, CentroDeportivoDTO.class));
+    }
+
+    @Transactional
+    public RegistroCentroRequestDTO registrar(RegistroCentroRequestDTO request) {
+        CentroDeportivoDTO centroDto = request.getCentro();
+        
+        if (centroDeportivoRepository.existsByNombreAndCiudad(centroDto.getNombre(), centroDto.getCiudad())) {
+            throw new CentroAlreadyExistsException("Ya existe un centro deportivo con el nombre '" + centroDto.getNombre() + "' en la ciudad de '" + centroDto.getCiudad() + "'.");
+        }
+
+        if (usuarioRepository.existsByEmail(request.getAdmin().getEmail())) {
+            throw new EmailAlreadyExistsException("Ya existe un usuario con ese correo electrónico.");
+        }
+
+        CentroDeportivo centro = modelMapper.map(centroDto, CentroDeportivo.class);
+        CentroDeportivo centroGuardado = centroDeportivoRepository.save(centro);
+
+        Usuario admin = modelMapper.map(request.getAdmin(), Usuario.class);
+        admin.setCentro(centroGuardado);
+        admin.setRol(RolUsuario.ADMINISTRADOR_CENTRO);
+        admin.setPassword(passwordEncoder.encode(request.getAdmin().getPassword()));
+        
+        usuarioRepository.save(admin);
+
+        request.setCentro(modelMapper.map(centroGuardado, CentroDeportivoDTO.class));
+        request.getAdmin().setPassword(null);
+        return request;
     }
 }
