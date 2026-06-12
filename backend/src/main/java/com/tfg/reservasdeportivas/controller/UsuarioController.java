@@ -3,6 +3,7 @@ package com.tfg.reservasdeportivas.controller;
 import com.tfg.reservasdeportivas.dto.UsuarioDTO;
 import com.tfg.reservasdeportivas.service.UsuarioService;
 import com.tfg.reservasdeportivas.exception.EmailAlreadyExistsException;
+import com.tfg.reservasdeportivas.exception.InvalidCredentialsException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,15 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.registrar(dto));
         } catch (EmailAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioDTO> login(@RequestBody UsuarioDTO dto) {
+        try {
+            return ResponseEntity.ok(usuarioService.login(dto));
+        } catch (InvalidCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 

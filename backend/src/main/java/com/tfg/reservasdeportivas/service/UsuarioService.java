@@ -5,6 +5,7 @@ import com.tfg.reservasdeportivas.model.Usuario;
 import com.tfg.reservasdeportivas.model.enums.RolUsuario;
 import com.tfg.reservasdeportivas.repository.UsuarioRepository;
 import com.tfg.reservasdeportivas.exception.EmailAlreadyExistsException;
+import com.tfg.reservasdeportivas.exception.InvalidCredentialsException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,5 +45,19 @@ public class UsuarioService {
     public Optional<UsuarioDTO> findById(Integer id) {
         return usuarioRepository.findById(id)
                 .map(usuario -> modelMapper.map(usuario, UsuarioDTO.class));
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioDTO login(UsuarioDTO dto) {
+        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Correo o contraseña incorrectos"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), usuario.getPassword())) {
+            throw new InvalidCredentialsException("Correo o contraseña incorrectos");
+        }
+
+        UsuarioDTO mappedUser = modelMapper.map(usuario, UsuarioDTO.class);
+        mappedUser.setPassword(null);
+        return mappedUser;
     }
 }
