@@ -39,6 +39,10 @@ public class UsuarioDTO implements Serializable {
     private LocalDateTime fechaRegistro;
     private BigDecimal valoracionMedia;
 
+    private String descripcion;
+    private Boolean notificacionesPartidas = true;
+    private Boolean notificacionesChat = true;
+
     public UsuarioDTO() {
     }
 
@@ -80,6 +84,15 @@ public class UsuarioDTO implements Serializable {
 
     public BigDecimal getValoracionMedia() { return valoracionMedia; }
     public void setValoracionMedia(BigDecimal valoracionMedia) { this.valoracionMedia = valoracionMedia; }
+
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+    public Boolean getNotificacionesPartidas() { return notificacionesPartidas; }
+    public void setNotificacionesPartidas(Boolean notificacionesPartidas) { this.notificacionesPartidas = notificacionesPartidas; }
+
+    public Boolean getNotificacionesChat() { return notificacionesChat; }
+    public void setNotificacionesChat(Boolean notificacionesChat) { this.notificacionesChat = notificacionesChat; }
 
     @Override
     public boolean equals(Object o) {

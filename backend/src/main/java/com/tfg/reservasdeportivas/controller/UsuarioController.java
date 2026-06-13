@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -40,5 +42,26 @@ public class UsuarioController {
         return usuarioService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> actualizarPerfil(@PathVariable Integer id, @RequestBody UsuarioDTO dto) {
+        try {
+            return ResponseEntity.ok(usuarioService.actualizarPerfil(id, dto));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<Void> cambiarPassword(@PathVariable Integer id, @RequestBody Map<String, String> passwords) {
+        try {
+            usuarioService.cambiarPassword(id, passwords);
+            return ResponseEntity.ok().build();
+        } catch (InvalidCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

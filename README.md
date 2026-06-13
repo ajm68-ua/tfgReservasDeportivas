@@ -31,6 +31,9 @@ erDiagram
         enum rol
         datetime fecha_registro
         decimal valoracion_media
+        text descripcion
+        boolean notificaciones_partidas
+        boolean notificaciones_chat
     }
 
     Centros_Deportivos {

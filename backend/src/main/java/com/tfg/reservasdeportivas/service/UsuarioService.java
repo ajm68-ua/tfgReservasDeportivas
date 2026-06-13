@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.Map;
 
 @Service
 public class UsuarioService {
@@ -59,5 +60,48 @@ public class UsuarioService {
         UsuarioDTO mappedUser = modelMapper.map(usuario, UsuarioDTO.class);
         mappedUser.setPassword(null);
         return mappedUser;
+    }
+
+    @Transactional
+    public UsuarioDTO actualizarPerfil(Integer id, UsuarioDTO dto) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        usuario.setNombre(dto.getNombre());
+        usuario.setApellidos(dto.getApellidos());
+        usuario.setTelefono(dto.getTelefono());
+        usuario.setCiudad(dto.getCiudad());
+        usuario.setNivel(dto.getNivel());
+        usuario.setDescripcion(dto.getDescripcion());
+        if (dto.getFoto() != null) {
+            usuario.setFoto(dto.getFoto());
+        }
+        if (dto.getNotificacionesPartidas() != null) {
+            usuario.setNotificacionesPartidas(dto.getNotificacionesPartidas());
+        }
+        if (dto.getNotificacionesChat() != null) {
+            usuario.setNotificacionesChat(dto.getNotificacionesChat());
+        }
+
+        Usuario guardado = usuarioRepository.save(usuario);
+        UsuarioDTO mappedUser = modelMapper.map(guardado, UsuarioDTO.class);
+        mappedUser.setPassword(null);
+        return mappedUser;
+    }
+
+    @Transactional
+    public void cambiarPassword(Integer id, Map<String, String> passwords) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        String contrasenaActual = passwords.get("contrasenaActual");
+        String nuevaContrasena = passwords.get("nuevaContrasena");
+
+        if (!passwordEncoder.matches(contrasenaActual, usuario.getPassword())) {
+            throw new InvalidCredentialsException("La contraseña actual no es correcta.");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(nuevaContrasena));
+        usuarioRepository.save(usuario);
     }
 }

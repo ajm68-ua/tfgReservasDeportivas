@@ -21,6 +21,8 @@ public class Usuario {
 
     private String nombre;
     private String apellidos;
+
+    @Column(columnDefinition = "TEXT")
     private String foto;
 
     @Column(unique = true)
@@ -42,6 +44,15 @@ public class Usuario {
 
     @Column(name = "valoracion_media", precision = 3, scale = 2)
     private BigDecimal valoracionMedia;
+
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
+    @Column(name = "notificaciones_partidas")
+    private Boolean notificacionesPartidas = true;
+
+    @Column(name = "notificaciones_chat")
+    private Boolean notificacionesChat = true;
 
     public Usuario() {
     }
@@ -153,5 +164,29 @@ public class Usuario {
 
     public void setValoracionMedia(BigDecimal valoracionMedia) {
         this.valoracionMedia = valoracionMedia;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Boolean getNotificacionesPartidas() {
+        return notificacionesPartidas;
+    }
+
+    public void setNotificacionesPartidas(Boolean notificacionesPartidas) {
+        this.notificacionesPartidas = notificacionesPartidas;
+    }
+
+    public Boolean getNotificacionesChat() {
+        return notificacionesChat;
+    }
+
+    public void setNotificacionesChat(Boolean notificacionesChat) {
+        this.notificacionesChat = notificacionesChat;
     }
 }
