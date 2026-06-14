@@ -1,9 +1,11 @@
 package com.tfg.reservasdeportivas.service;
 
 import com.tfg.reservasdeportivas.dto.UsuarioDTO;
+import com.tfg.reservasdeportivas.model.CentroDeportivo;
 import com.tfg.reservasdeportivas.model.Usuario;
 import com.tfg.reservasdeportivas.model.enums.RolUsuario;
 import com.tfg.reservasdeportivas.repository.UsuarioRepository;
+import com.tfg.reservasdeportivas.repository.CentroDeportivoRepository;
 import com.tfg.reservasdeportivas.exception.EmailAlreadyExistsException;
 import com.tfg.reservasdeportivas.exception.InvalidCredentialsException;
 import org.modelmapper.ModelMapper;
@@ -14,12 +16,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private CentroDeportivoRepository centroDeportivoRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -102,6 +109,60 @@ public class UsuarioService {
         }
 
         usuario.setPassword(passwordEncoder.encode(nuevaContrasena));
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsuarioDTO> findAdministradoresByCentro(Integer centroId) {
+        return usuarioRepository.findByCentroId(centroId).stream()
+                .filter(u -> u.getRol() == RolUsuario.ADMINISTRADOR_CENTRO)
+                .map(u -> modelMapper.map(u, UsuarioDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UsuarioDTO asignarAdministrador(Integer centroId, String email) {
+        String cleanEmail = email != null ? email.trim() : "";
+        Usuario usuario = usuarioRepository.findByEmail(cleanEmail)
+                .orElseThrow(() -> new IllegalArgumentException("No se ha encontrado un usuario con ese correo electrónico."));
+
+        if (usuario.getRol() == RolUsuario.ADMINISTRADOR_CENTRO && usuario.getCentro() != null && !usuario.getCentro().getId().equals(centroId)) {
+            throw new IllegalStateException("Este usuario ya es administrador de otro centro deportivo.");
+        }
+        
+        if (usuario.getRol() == RolUsuario.ADMINISTRADOR_CENTRO && usuario.getCentro() != null && usuario.getCentro().getId().equals(centroId)) {
+            throw new IllegalStateException("Este usuario ya es administrador de tu centro.");
+        }
+
+        CentroDeportivo centro = centroDeportivoRepository.findById(centroId)
+                .orElseThrow(() -> new IllegalArgumentException("Centro deportivo no encontrado."));
+
+        usuario.setRol(RolUsuario.ADMINISTRADOR_CENTRO);
+        usuario.setCentro(centro);
+
+        Usuario guardado = usuarioRepository.save(usuario);
+        return modelMapper.map(guardado, UsuarioDTO.class);
+    }
+
+    @Transactional
+    public void revocarAdministrador(Integer centroId, String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+
+        if (usuario.getCentro() == null || !usuario.getCentro().getId().equals(centroId)) {
+            throw new IllegalArgumentException("Este usuario no es administrador de tu centro.");
+        }
+
+        long adminsEnCentro = usuarioRepository.findByCentroId(centroId).stream()
+                .filter(u -> u.getRol() == RolUsuario.ADMINISTRADOR_CENTRO)
+                .count();
+
+        if (adminsEnCentro <= 1) {
+            throw new IllegalStateException("No puedes revocar los permisos al único administrador del centro.");
+        }
+
+        usuario.setRol(RolUsuario.DEPORTISTA);
+        usuario.setCentro(null);
         usuarioRepository.save(usuario);
     }
 }

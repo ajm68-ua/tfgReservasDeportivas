@@ -40,4 +40,25 @@ public class CentroDeportivoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CentroDeportivoDTO> actualizarCentro(@PathVariable Integer id, @Valid @RequestBody CentroDeportivoDTO dto) {
+        try {
+            return ResponseEntity.ok(centroDeportivoService.actualizarCentro(id, dto));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarCentro(@PathVariable Integer id) {
+        try {
+            centroDeportivoService.eliminarCentro(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
 }
