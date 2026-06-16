@@ -74,4 +74,44 @@ public class CentroDeportivoService {
         request.getAdmin().setPassword(null);
         return request;
     }
+
+    @Transactional
+    public CentroDeportivoDTO actualizarCentro(Integer id, CentroDeportivoDTO dto) {
+        CentroDeportivo centro = centroDeportivoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Centro deportivo no encontrado."));
+
+        centro.setNombre(dto.getNombre());
+        centro.setDireccion(dto.getDireccion());
+        centro.setCiudad(dto.getCiudad());
+        centro.setTelefono(dto.getTelefono());
+        centro.setHorarioApertura(dto.getHorarioApertura());
+        centro.setHorarioCierre(dto.getHorarioCierre());
+
+        if (dto.getFoto() != null) {
+            centro.setFoto(dto.getFoto());
+        }
+
+        CentroDeportivo guardado = centroDeportivoRepository.save(centro);
+        return modelMapper.map(guardado, CentroDeportivoDTO.class);
+    }
+
+    @Transactional
+    public void eliminarCentro(Integer id) {
+        CentroDeportivo centro = centroDeportivoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Centro deportivo no encontrado."));
+
+        List<Usuario> administradores = usuarioRepository.findByCentroId(id);
+
+        if (administradores.size() > 1) {
+            throw new IllegalStateException("No se puede eliminar el centro porque tiene más de un administrador asignado. Primero revoca los permisos de los demás administradores.");
+        }
+
+        for (Usuario admin : administradores) {
+            admin.setCentro(null);
+            admin.setRol(RolUsuario.DEPORTISTA);
+            usuarioRepository.save(admin);
+        }
+
+        centroDeportivoRepository.delete(centro);
+    }
 }

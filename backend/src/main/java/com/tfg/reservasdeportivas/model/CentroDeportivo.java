@@ -14,6 +14,8 @@ public class CentroDeportivo {
     private Integer id;
 
     private String nombre;
+
+    @Column(columnDefinition = "TEXT")
     private String foto;
     private String direccion;
     private String ciudad;
@@ -25,7 +27,7 @@ public class CentroDeportivo {
     @Column(name = "horario_cierre")
     private LocalTime horarioCierre;
 
-    @OneToMany(mappedBy = "centro")
+    @OneToMany(mappedBy = "centro", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pista> pistas = new ArrayList<>();
 
     @OneToMany(mappedBy = "centro")

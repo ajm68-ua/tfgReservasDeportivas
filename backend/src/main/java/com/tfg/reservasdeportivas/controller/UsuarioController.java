@@ -64,4 +64,32 @@ public class UsuarioController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/admin-centro/{centroId}/administradores")
+    public ResponseEntity<java.util.List<UsuarioDTO>> getAdministradores(@PathVariable Integer centroId) {
+        return ResponseEntity.ok(usuarioService.findAdministradoresByCentro(centroId));
+    }
+
+    @PostMapping("/admin-centro/{centroId}/asignar")
+    public ResponseEntity<?> asignarAdministrador(@PathVariable Integer centroId, @RequestBody Map<String, String> body) {
+        try {
+            return ResponseEntity.ok(usuarioService.asignarAdministrador(centroId, body.get("email")));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/admin-centro/{centroId}/revocar/{email}")
+    public ResponseEntity<?> revocarAdministrador(@PathVariable Integer centroId, @PathVariable String email) {
+        try {
+            usuarioService.revocarAdministrador(centroId, email);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
 }

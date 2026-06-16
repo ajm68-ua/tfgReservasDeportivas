@@ -72,9 +72,17 @@ function cargarDatos() {
   Object.assign(formOriginal, formPerfil)
 }
 
-function subirFoto(event) {
+async function subirFoto(event) {
+  errorPerfil.value = ''
+  exitoPerfil.value = ''
+  
   const file = event.target.files[0]
   if (!file) return
+
+  if (file.size > 2 * 1024 * 1024) {
+    errorPerfil.value = 'La imagen es demasiado grande. El tamaño máximo es 2MB.'
+    return
+  }
 
   const reader = new FileReader()
   reader.onload = async (e) => {
