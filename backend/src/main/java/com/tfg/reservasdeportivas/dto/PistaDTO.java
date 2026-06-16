@@ -10,7 +10,9 @@ public class PistaDTO implements Serializable {
 
     private Integer id;
     private Integer centroId;
-    private String nombreCentro;
+    private String centroNombre;
+    private String centroCiudad;
+    private String centroFoto;
     private String nombre;
     private Deporte deporte;
     private BigDecimal precioPorHora;
@@ -26,8 +28,14 @@ public class PistaDTO implements Serializable {
     public Integer getCentroId() { return centroId; }
     public void setCentroId(Integer centroId) { this.centroId = centroId; }
 
-    public String getNombreCentro() { return nombreCentro; }
-    public void setNombreCentro(String nombreCentro) { this.nombreCentro = nombreCentro; }
+    public String getCentroNombre() { return centroNombre; }
+    public void setCentroNombre(String centroNombre) { this.centroNombre = centroNombre; }
+
+    public String getCentroCiudad() { return centroCiudad; }
+    public void setCentroCiudad(String centroCiudad) { this.centroCiudad = centroCiudad; }
+
+    public String getCentroFoto() { return centroFoto; }
+    public void setCentroFoto(String centroFoto) { this.centroFoto = centroFoto; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }

@@ -7,8 +7,7 @@ import CentroDeportivoCard from '@/components/CentroDeportivoCard.vue'
 const router = useRouter()
 const deportes = ['Pádel', 'Tenis', 'Fútbol', 'Baloncesto', 'Squash', 'Bádminton']
 const deporteSeleccionado = ref('')
-const fechaSeleccionada = ref('')
-const hoy = new Date().toISOString().split('T')[0]
+const ciudadSeleccionada = ref('')
 
 const centros = ref([])
 const cargando = ref(true)
@@ -20,6 +19,11 @@ const centrosPorPagina = 3
 const centrosMostrados = computed(() => {
   const inicio = paginaActual.value * centrosPorPagina
   return centros.value.slice(inicio, inicio + centrosPorPagina)
+})
+
+const ciudadesUnicas = computed(() => {
+  const ciudades = centros.value.map(c => c.ciudad).filter(Boolean)
+  return [...new Set(ciudades)].sort()
 })
 
 const hayVariasPaginas = computed(() => centros.value.length > centrosPorPagina)
@@ -45,7 +49,7 @@ function buscarPistas() {
     name: 'pistas',
     query: {
       deporte: deporteSeleccionado.value || undefined,
-      fecha: fechaSeleccionada.value || undefined
+      ciudad: ciudadSeleccionada.value || undefined
     }
   })
 }
@@ -90,16 +94,18 @@ onMounted(async () => {
             </svg>
           </div>
 
-          <div class="flex-1 flex items-center px-6 text-gray-400">
-            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <div class="flex-1 flex items-center px-6 relative">
+            <svg class="w-5 h-5 text-gray-400 mr-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <input
-              type="date"
-              v-model="fechaSeleccionada"
-              :min="hoy"
-              class="bg-transparent text-gray-600 text-sm focus:outline-none cursor-pointer w-full"
-            />
+            <select v-model="ciudadSeleccionada" class="w-full bg-transparent text-gray-600 text-sm focus:outline-none cursor-pointer appearance-none py-2">
+              <option value="" disabled selected>Selecciona ciudad</option>
+              <option v-for="ciudad in ciudadesUnicas" :key="ciudad" :value="ciudad">{{ ciudad }}</option>
+            </select>
+            <svg class="w-4 h-4 text-gray-500 absolute right-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
 
           <button @click="buscarPistas" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3 px-8 rounded-full transition flex items-center gap-2 whitespace-nowrap">
