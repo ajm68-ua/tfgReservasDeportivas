@@ -50,7 +50,7 @@ function getImagen(foto) {
 
       <RouterLink :to="`/centros/${centro.id}`" class="mt-auto">
         <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">
-          Ver disponibilidad
+          Ver centro
         </button>
       </RouterLink>
     </div>
