@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import { IMAGEN_FALLBACK_CENTRO } from '@/utils/constants'
 
 defineProps({
   centro: {
@@ -8,8 +9,7 @@ defineProps({
   }
 })
 
-//Imagen por defecto
-const imagenFallback = 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?q=80&w=800&auto=format&fit=crop'
+const imagenFallback = IMAGEN_FALLBACK_CENTRO
 
 function getImagen(foto) {
   return foto && foto.trim() !== '' ? foto : imagenFallback

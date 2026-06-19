@@ -4,6 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import api from '@/services/api'
 import { toast } from 'vue3-toastify'
 import PistaCard from '@/components/PistaCard.vue'
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
+import { DEPORTES_ARRAY, MAPA_DEPORTES } from '@/utils/constants'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,15 +15,7 @@ const pistas = ref([])
 const centros = ref([])
 const cargando = ref(true)
 
-const deportes = ['Pádel', 'Tenis', 'Fútbol', 'Baloncesto', 'Squash', 'Bádminton']
-const mapaDeportes = {
-  'PADEL': 'Pádel',
-  'TENIS': 'Tenis',
-  'FUTBOL': 'Fútbol',
-  'BALONCESTO': 'Baloncesto',
-  'SQUASH': 'Squash',
-  'BADMINTON': 'Bádminton'
-}
+const deportes = DEPORTES_ARRAY
 
 const filtroDeporte = ref(route.query.deporte || '')
 const filtroCiudad = ref(route.query.ciudad || '')
@@ -43,7 +38,7 @@ const pistasFiltradasYOrdenadas = computed(() => {
   let result = pistas.value
 
   if (filtroDeporte.value) {
-    result = result.filter(p => mapaDeportes[p.deporte] === filtroDeporte.value)
+    result = result.filter(p => MAPA_DEPORTES[p.deporte] === filtroDeporte.value)
   }
 
   if (filtroCiudad.value) {
@@ -155,18 +150,13 @@ onMounted(async () => {
 
       <main class="w-full">
         
-        <div v-if="cargando" class="flex justify-center py-20">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
+        <LoadingSpinner v-if="cargando" />
 
-        <div v-else-if="pistasFiltradasYOrdenadas.length === 0" class="bg-white rounded-2xl border border-gray-100 p-16 text-center shadow-sm">
-          <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-          </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">No hemos encontrado resultados</h3>
-          <p class="text-gray-500 mb-6 max-w-sm mx-auto">No hay pistas que coincidan con los filtros seleccionados. Intenta ampliar tu búsqueda.</p>
-          <button @click="limpiarFiltros" class="px-6 py-2.5 bg-gray-900 text-white rounded-full font-semibold text-sm hover:bg-gray-800 transition shadow-md hover:shadow-lg">Limpiar todos los filtros</button>
-        </div>
+        <EmptyState 
+          v-else-if="pistasFiltradasYOrdenadas.length === 0"
+          descripcion="No hay pistas que coincidan con los filtros seleccionados. Intenta ampliar tu búsqueda."
+          @action="limpiarFiltros"
+        />
 
         <div v-else class="space-y-5">
           <p class="text-sm text-gray-500 font-medium pb-2 border-b border-gray-100">Mostrando {{ pistasFiltradasYOrdenadas.length }} pista{{ pistasFiltradasYOrdenadas.length > 1 ? 's' : '' }}</p>
