@@ -22,13 +22,12 @@ onMounted(async () => {
   try {
     const [resCentro, resPistas] = await Promise.all([
       api.get(`/centros/${centroId}`),
-      api.get('/pistas')
+      api.get(`/pistas/centro/${centroId}`)
     ])
     
     centro.value = resCentro.data
     
     pistasDelCentro.value = resPistas.data
-      .filter(p => p.centroId === parseInt(centroId))
       .map(p => ({
         ...p,
         deporteFormat: MAPA_DEPORTES[p.deporte] || p.deporte

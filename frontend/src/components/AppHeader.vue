@@ -70,6 +70,14 @@ const userInitials = computed(() => {
             >
               Mi Perfil
             </RouterLink>
+            <RouterLink 
+              v-if="authStore.isAdmin()"
+              to="/admin/pistas" 
+              @click="menuAbierto = false"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+            >
+              Gestión de Pistas
+            </RouterLink>
             <hr class="my-1 border-gray-100">
             <button 
               @click="cerrarSesion"
