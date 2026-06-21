@@ -1,12 +1,16 @@
 <script setup>
 import { defineProps } from 'vue'
+import { RouterLink } from 'vue-router'
+import { IMAGEN_FALLBACK_PISTA } from '@/utils/constants'
 
-const props = defineProps({
+defineProps({
   pista: {
     type: Object,
     required: true
   }
 })
+
+const imagenFallback = IMAGEN_FALLBACK_PISTA
 </script>
 
 <template>

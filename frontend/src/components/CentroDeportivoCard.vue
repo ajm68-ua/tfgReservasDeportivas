@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import { IMAGEN_FALLBACK_CENTRO } from '@/utils/constants'
 
 defineProps({
   centro: {
@@ -8,8 +9,7 @@ defineProps({
   }
 })
 
-//Imagen por defecto
-const imagenFallback = 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?q=80&w=800&auto=format&fit=crop'
+const imagenFallback = IMAGEN_FALLBACK_CENTRO
 
 function getImagen(foto) {
   return foto && foto.trim() !== '' ? foto : imagenFallback
@@ -50,7 +50,7 @@ function getImagen(foto) {
 
       <RouterLink :to="`/centros/${centro.id}`" class="mt-auto">
         <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm">
-          Ver disponibilidad
+          Ver centro
         </button>
       </RouterLink>
     </div>

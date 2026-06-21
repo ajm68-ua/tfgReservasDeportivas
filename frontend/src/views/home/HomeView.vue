@@ -3,9 +3,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
 import CentroDeportivoCard from '@/components/CentroDeportivoCard.vue'
+import { DEPORTES_ARRAY } from '@/utils/constants'
 
 const router = useRouter()
-const deportes = ['Pádel', 'Tenis', 'Fútbol', 'Baloncesto', 'Squash', 'Bádminton']
+const deportes = DEPORTES_ARRAY
 const deporteSeleccionado = ref('')
 const ciudadSeleccionada = ref('')
 
