@@ -17,7 +17,15 @@ const pista = ref(null)
 const centro = ref(null)
 const cargando = ref(true)
 
-const fecha = ref(new Date().toISOString().split('T')[0])
+function getFechaLocal() {
+  const hoy = new Date()
+  const anio = hoy.getFullYear()
+  const mes = String(hoy.getMonth() + 1).padStart(2, '0')
+  const dia = String(hoy.getDate()).padStart(2, '0')
+  return `${anio}-${mes}-${dia}`
+}
+
+const fecha = ref(getFechaLocal())
 const bloquesSeleccionados = ref([])
 const nivel = ref('INTERMEDIO')
 const esAbierta = ref(false)
@@ -99,7 +107,7 @@ function generarBloques() {
       return startStr < r.horaFin && endStr > r.horaInicio
     })
 
-    const esHoy = fecha.value === new Date().toISOString().split('T')[0]
+    const esHoy = fecha.value === getFechaLocal()
     const horaActual = new Date().getHours()
     const yaPaso = esHoy && i <= horaActual
 
@@ -145,7 +153,7 @@ const precioTotal = computed(() => {
 })
 
 const fechaMinima = computed(() => {
-  return new Date().toISOString().split('T')[0]
+  return getFechaLocal()
 })
 
 async function confirmarReserva() {

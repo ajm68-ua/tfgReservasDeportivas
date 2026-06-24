@@ -40,6 +40,19 @@ public class ReservaService {
     }
 
     public ReservaDTO crearReserva(ReservaDTO dto) {
+        if (dto.getFecha().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("No se puede reservar en una fecha pasada");
+        }
+
+        if (!dto.getHoraInicio().isBefore(dto.getHoraFin())) {
+            throw new IllegalArgumentException("La hora de inicio debe ser anterior a la hora de fin");
+        }
+
+        if (dto.getHoraInicio().getMinute() != 0 || dto.getHoraInicio().getSecond() != 0 ||
+            dto.getHoraFin().getMinute() != 0 || dto.getHoraFin().getSecond() != 0) {
+            throw new IllegalArgumentException("Las reservas deben ser en horas en punto");
+        }
+
         Pista pista = pistaRepository.findById(dto.getPistaId())
                 .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada"));
 
@@ -47,15 +60,19 @@ public class ReservaService {
             throw new IllegalArgumentException("La pista no está disponible");
         }
 
+        java.time.LocalTime apertura = pista.getCentro().getHorarioApertura();
+        java.time.LocalTime cierre = pista.getCentro().getHorarioCierre();
+
+        if (dto.getHoraInicio().isBefore(apertura) || dto.getHoraFin().isAfter(cierre)) {
+            throw new IllegalArgumentException("El horario seleccionado está fuera del horario de apertura del centro");
+        }
+
         Usuario organizador = usuarioRepository.findById(dto.getOrganizadorId())
                 .orElseThrow(() -> new IllegalArgumentException("Organizador no encontrado"));
 
-        List<Reserva> reservasDelDia = reservaRepository.findByPistaIdAndFecha(pista.getId(), dto.getFecha());
-        for (Reserva r : reservasDelDia) {
-            boolean solapa = dto.getHoraInicio().isBefore(r.getHoraFin()) && dto.getHoraFin().isAfter(r.getHoraInicio());
-            if (solapa) {
-                throw new IllegalArgumentException("La franja horaria seleccionada ya está ocupada");
-            }
+        boolean solapa = reservaRepository.existsOverlappingReservation(pista.getId(), dto.getFecha(), dto.getHoraInicio(), dto.getHoraFin());
+        if (solapa) {
+            throw new IllegalArgumentException("La franja horaria seleccionada ya está ocupada");
         }
 
         Reserva reserva = modelMapper.map(dto, Reserva.class);
