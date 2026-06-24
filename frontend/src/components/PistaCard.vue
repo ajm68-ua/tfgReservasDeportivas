@@ -19,7 +19,7 @@ const imagenFallback = IMAGEN_FALLBACK_PISTA
       <img 
         v-if="pista.centroFoto" 
         :src="pista.centroFoto" 
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+        class="w-full h-full object-cover" 
         alt="Foto Centro" 
       />
       <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-400">
@@ -32,16 +32,10 @@ const imagenFallback = IMAGEN_FALLBACK_PISTA
       <div>
         <div class="flex items-center gap-2 mb-3">
           <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold uppercase tracking-wider">{{ pista.deporte }}</span>
-          <span v-if="pista.disponible" class="px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-            Disponible
-          </span>
-          <span v-else class="px-2.5 py-1 bg-red-50 text-red-700 rounded-md text-[10px] font-bold uppercase tracking-wider">No Disponible</span>
         </div>
         
         <h3 class="text-xl font-bold text-gray-900 mb-1 leading-tight">{{ pista.nombre }}</h3>
         <p class="text-sm font-semibold text-gray-600 mb-4 flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
           {{ pista.centroNombre }}
         </p>
         

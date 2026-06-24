@@ -35,7 +35,7 @@ const ciudadesUnicas = computed(() => {
 })
 
 const pistasFiltradasYOrdenadas = computed(() => {
-  let result = pistas.value
+  let result = pistas.value.filter(p => p.disponible)
 
   if (filtroDeporte.value) {
     result = result.filter(p => MAPA_DEPORTES[p.deporte] === filtroDeporte.value)
