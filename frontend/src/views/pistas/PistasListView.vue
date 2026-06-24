@@ -6,6 +6,7 @@ import { toast } from 'vue3-toastify'
 import PistaCard from '@/components/PistaCard.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import PageHeader from '@/components/ui/PageHeader.vue'
 import { DEPORTES_ARRAY, MAPA_DEPORTES } from '@/utils/constants'
 
 const route = useRoute()
@@ -96,12 +97,10 @@ onMounted(async () => {
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col font-sans">
     
-    <div class="bg-gray-900 text-white py-12 px-6 lg:px-8 shadow-inner">
-      <div class="max-w-7xl mx-auto">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">Encuentra tu pista</h1>
-        <p class="text-gray-400 text-lg">Reserva las mejores instalaciones en tu ciudad al mejor precio.</p>
-      </div>
-    </div>
+    <PageHeader 
+      title="Encuentra tu pista" 
+      subtitle="Reserva las mejores instalaciones en tu ciudad al mejor precio." 
+    />
 
     <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10 w-full flex-grow flex flex-col gap-8">
       

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import { toast } from 'vue3-toastify'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
+import PageHeader from '@/components/ui/PageHeader.vue'
 import { MAPA_DEPORTES } from '@/utils/constants'
 
 const route = useRoute()
@@ -185,12 +186,11 @@ async function confirmarReserva() {
 
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col font-sans">
-    <div class="bg-gray-900 text-white py-12 px-6 lg:px-8 shadow-inner">
-      <div class="max-w-7xl mx-auto">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">Nueva Reserva</h1>
-        <p class="text-gray-400 text-lg">Configura los detalles de tu partido</p>
-      </div>
-    </div>
+    
+    <PageHeader 
+      title="Nueva Reserva" 
+      subtitle="Configura los detalles de tu partido" 
+    />
 
     <LoadingSpinner v-if="cargando" />
 

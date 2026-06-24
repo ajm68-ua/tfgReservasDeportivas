@@ -5,6 +5,7 @@ import api from '@/services/api'
 import { toast } from 'vue3-toastify'
 import PistaCard from '@/components/PistaCard.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
+import PageHeader from '@/components/ui/PageHeader.vue'
 
 import { MAPA_DEPORTES, IMAGEN_FALLBACK_CENTRO } from '@/utils/constants'
 
@@ -49,21 +50,14 @@ onMounted(async () => {
     <LoadingSpinner v-if="cargando" full-screen />
 
     <template v-else-if="centro">
-      <div class="bg-gray-900 text-white py-12 px-6 lg:px-8 shadow-inner">
-        <div class="max-w-7xl mx-auto">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="px-3 py-1 bg-blue-600 text-white rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-              {{ centro.ciudad }}
-            </span>
-          </div>
-          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">{{ centro.nombre }}</h1>
+      <PageHeader :title="centro.nombre">
+        <template #subtitle>
           <p class="text-gray-400 text-lg flex items-center gap-2">
             <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             {{ centro.direccion }}
           </p>
-        </div>
-      </div>
+        </template>
+      </PageHeader>
 
       <div class="max-w-7xl mx-auto px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
