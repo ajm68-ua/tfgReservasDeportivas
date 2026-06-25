@@ -35,6 +35,7 @@ const userInitials = computed(() => {
       <RouterLink to="/pistas" class="hover:text-gray-900 transition-colors">Buscar Pistas</RouterLink>
       <RouterLink to="/partidas" class="hover:text-gray-900 transition-colors">Partidas Abiertas</RouterLink>
       <RouterLink to="/centros" class="hover:text-gray-900 transition-colors">Centros Deportivos</RouterLink>
+      <RouterLink v-if="authStore.isLogged()" to="/mis-reservas" class="hover:text-gray-900 transition-colors">Mis Reservas</RouterLink>
     </nav>
 
     <div class="w-1/4 flex items-center justify-end gap-3">

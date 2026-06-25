@@ -31,9 +31,16 @@ public class PistaService {
     }
 
     public List<PistaDTO> obtenerPistasDisponiblesPorCentro(Integer centroId) {
-        return pistaRepository.findByCentroIdAndDisponibleTrue(centroId).stream()
+        return pistaRepository.findByCentroId(centroId).stream()
+                .filter(Pista::getDisponible)
                 .map(pista -> modelMapper.map(pista, PistaDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public PistaDTO obtenerPistaPorId(Integer id) {
+        Pista pista = pistaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pista no encontrada"));
+        return modelMapper.map(pista, PistaDTO.class);
     }
 
     public List<PistaDTO> obtenerPistasPorCentro(Integer centroId) {

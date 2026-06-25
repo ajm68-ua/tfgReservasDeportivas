@@ -25,6 +25,15 @@ public class PistaController {
         return ResponseEntity.ok(pistaService.obtenerPistasDisponiblesPorCentro(centroId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PistaDTO> obtenerPistaPorId(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(pistaService.obtenerPistaPorId(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/admin/centro/{centroId}")
     public ResponseEntity<List<PistaDTO>> obtenerTodasPistasPorCentroAdmin(@PathVariable Integer centroId) {
         return ResponseEntity.ok(pistaService.obtenerPistasPorCentro(centroId));
