@@ -8,5 +8,4 @@ import java.util.List;
 public interface PistaRepository extends JpaRepository<Pista, Integer> {
     List<Pista> findByCentroId(Integer centroId);
     List<Pista> findByDisponibleTrue();
-    List<Pista> findByCentroIdAndDisponibleTrue(Integer centroId);
 }

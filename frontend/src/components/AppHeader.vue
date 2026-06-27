@@ -35,6 +35,7 @@ const userInitials = computed(() => {
       <RouterLink to="/pistas" class="hover:text-gray-900 transition-colors">Buscar Pistas</RouterLink>
       <RouterLink to="/partidas" class="hover:text-gray-900 transition-colors">Partidas Abiertas</RouterLink>
       <RouterLink to="/centros" class="hover:text-gray-900 transition-colors">Centros Deportivos</RouterLink>
+      <RouterLink v-if="authStore.isLogged()" to="/mis-reservas" class="hover:text-gray-900 transition-colors">Mis Reservas</RouterLink>
     </nav>
 
     <div class="w-1/4 flex items-center justify-end gap-3">
@@ -62,7 +63,12 @@ const userInitials = computed(() => {
             <span v-else>{{ userInitials }}</span>
           </button>
 
-          <div v-if="menuAbierto" class="absolute right-0 top-12 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-gray-100 animate-fade-in-down">
+          <div v-if="menuAbierto" class="absolute right-0 top-12 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 border border-gray-100 animate-fade-in-down">
+            <div class="px-4 py-3 border-b border-gray-100 mb-2 bg-gray-50/50">
+              <p class="text-xs text-gray-500 font-medium uppercase tracking-wider mb-0.5">Saldo disponible</p>
+              <p class="text-lg font-bold text-gray-900">{{ authStore.usuario?.saldo?.toFixed(2) || '0.00' }}€</p>
+            </div>
+            
             <RouterLink 
               :to="authStore.isAdmin() ? '/admin' : '/perfil'" 
               @click="menuAbierto = false"

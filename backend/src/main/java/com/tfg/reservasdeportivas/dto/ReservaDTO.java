@@ -27,6 +27,8 @@ public class ReservaDTO implements Serializable {
     private Nivel nivel;
     private Boolean esAbierta;
     private LocalDateTime fechaCreacion;
+    private java.util.List<Integer> participantesIds = new java.util.ArrayList<>();
+    private Integer capacidadMaxima;
 
     public ReservaDTO() {
     }
@@ -75,6 +77,13 @@ public class ReservaDTO implements Serializable {
 
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+    public java.util.List<Integer> getParticipantesIds() { return participantesIds; }
+    public void setParticipantesIds(java.util.List<Integer> participantesIds) { this.participantesIds = participantesIds; }
+
+    public Integer getCapacidadMaxima() { return capacidadMaxima; }
+    public void setCapacidadMaxima(Integer capacidadMaxima) { this.capacidadMaxima = capacidadMaxima; }
+
 
     @Override
     public boolean equals(Object o) {

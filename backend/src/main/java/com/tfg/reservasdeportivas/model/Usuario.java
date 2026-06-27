@@ -45,6 +45,9 @@ public class Usuario {
     @Column(name = "valoracion_media", precision = 3, scale = 2)
     private BigDecimal valoracionMedia;
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal saldo = BigDecimal.ZERO;
+
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
@@ -164,6 +167,14 @@ public class Usuario {
 
     public void setValoracionMedia(BigDecimal valoracionMedia) {
         this.valoracionMedia = valoracionMedia;
+    }
+
+    public BigDecimal getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
     }
 
     public String getDescripcion() {

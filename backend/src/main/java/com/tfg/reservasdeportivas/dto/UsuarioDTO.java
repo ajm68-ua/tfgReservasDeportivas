@@ -38,6 +38,7 @@ public class UsuarioDTO implements Serializable {
     private RolUsuario rol;
     private LocalDateTime fechaRegistro;
     private BigDecimal valoracionMedia;
+    private BigDecimal saldo = BigDecimal.ZERO;
 
     private String descripcion;
     private Boolean notificacionesPartidas = true;
@@ -84,6 +85,9 @@ public class UsuarioDTO implements Serializable {
 
     public BigDecimal getValoracionMedia() { return valoracionMedia; }
     public void setValoracionMedia(BigDecimal valoracionMedia) { this.valoracionMedia = valoracionMedia; }
+
+    public BigDecimal getSaldo() { return saldo; }
+    public void setSaldo(BigDecimal saldo) { this.saldo = saldo; }
 
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }

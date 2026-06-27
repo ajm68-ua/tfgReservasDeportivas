@@ -36,7 +36,7 @@ public class Reserva {
     private BigDecimal precioTotal;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "estado_pago")
+    @Column(name = "estado_pago", columnDefinition = "VARCHAR(50)")
     private EstadoPago estadoPago;
 
     @Enumerated(EnumType.STRING)
@@ -44,6 +44,14 @@ public class Reserva {
 
     @Column(name = "es_abierta")
     private Boolean esAbierta;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "reserva_participantes",
+        joinColumns = @JoinColumn(name = "reserva_id"),
+        inverseJoinColumns = @JoinColumn(name = "usuario_id")
+    )
+    private java.util.List<Usuario> participantes = new java.util.ArrayList<>();
 
     @Column(name = "fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;
@@ -142,5 +150,13 @@ public class Reserva {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public java.util.List<Usuario> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(java.util.List<Usuario> participantes) {
+        this.participantes = participantes;
     }
 }

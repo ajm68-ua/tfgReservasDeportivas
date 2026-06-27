@@ -15,6 +15,9 @@ import PistaDetailView from '@/views/pistas/PistaDetailView.vue'
 import ReservaCreateView from '@/views/reservas/ReservaCreateView.vue'
 import ReservasListView from '@/views/reservas/ReservasListView.vue'
 import ReservaDetailView from '@/views/reservas/ReservaDetailView.vue'
+import MisReservasView from '@/views/reservas/MisReservasView.vue'
+import ReservaEditView from '@/views/reservas/ReservaEditView.vue'
+import ReservaPagoView from '@/views/reservas/ReservaPagoView.vue'
 
 import PartidasAbiertasView from '@/views/partidas/PartidasAbiertasView.vue'
 
@@ -96,6 +99,24 @@ const routes = [
     path: '/reservas/:id',
     name: 'reserva-detail',
     component: ReservaDetailView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/mis-reservas',
+    name: 'mis-reservas',
+    component: MisReservasView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/reservas/:id/editar',
+    name: 'reserva-edit',
+    component: ReservaEditView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/reservas/:id/pago',
+    name: 'reserva-pago',
+    component: ReservaPagoView,
     meta: { requiresAuth: true },
   },
   {
