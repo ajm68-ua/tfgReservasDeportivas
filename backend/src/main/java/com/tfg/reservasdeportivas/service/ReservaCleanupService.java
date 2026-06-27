@@ -30,9 +30,7 @@ public class ReservaCleanupService {
         LocalDate hoy = LocalDate.now();
         LocalTime ahora = LocalTime.now();
 
-        List<Reserva> parciales = reservaRepository.findAll().stream()
-                .filter(r -> r.getEstadoPago() == EstadoPago.PAGO_PARCIAL)
-                .toList();
+        List<Reserva> parciales = reservaRepository.findByEstadoPago(EstadoPago.PAGO_PARCIAL);
 
         for (Reserva r : parciales) {
             if (r.getFecha().isBefore(hoy) || (r.getFecha().isEqual(hoy) && r.getHoraInicio().isBefore(ahora))) {

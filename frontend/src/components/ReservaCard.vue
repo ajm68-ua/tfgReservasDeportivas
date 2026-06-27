@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   reserva: {
     type: Object,
     required: true
@@ -19,11 +19,11 @@ function formatearHora(horaStr) {
   return horaStr.substring(0, 5)
 }
 
-function haPasadoCalculado(reserva) {
-  if (!reserva.fecha || !reserva.horaInicio) return false
-  const fechaStr = `${reserva.fecha}T${reserva.horaInicio}`
+const haPasado = computed(() => {
+  if (!props.reserva.fecha || !props.reserva.horaInicio) return false
+  const fechaStr = `${props.reserva.fecha}T${props.reserva.horaInicio}`
   return new Date(fechaStr) < new Date()
-}
+})
 
 function etiquetaEstado(estado) {
   switch (estado) {
@@ -82,7 +82,7 @@ function etiquetaEstado(estado) {
 
       <div class="pt-4 border-t border-gray-100 flex flex-col gap-2.5">
         
-        <template v-if="!haPasadoCalculado(reserva)">
+        <template v-if="!haPasado">
           <button 
             v-if="reserva.estadoPago === 'PENDIENTE'"
             @click="emit('pagar', reserva.id)"
@@ -108,9 +108,9 @@ function etiquetaEstado(estado) {
           </div>
         </template>
 
-        <div v-if="reserva.estadoPago === 'CANCELADO' || haPasadoCalculado(reserva)" class="flex gap-2.5">
+        <div v-if="reserva.estadoPago === 'CANCELADO' || haPasado" class="flex gap-2.5">
           <button 
-            v-if="reserva.estadoPago === 'CANCELADO' && !haPasadoCalculado(reserva)"
+            v-if="reserva.estadoPago === 'CANCELADO' && !haPasado"
             @click="emit('re-reservar', reserva)"
             class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-md hover:shadow-lg"
           >

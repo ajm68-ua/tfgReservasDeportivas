@@ -169,7 +169,7 @@ const procesarPago = async () => {
               </div>
 
               <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
-                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Tu Billetera Virtual</p>
+                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Tu Saldo</p>
                 <p class="text-xl font-bold text-gray-900">{{ authStore.usuario?.saldo?.toFixed(2) || '0.00' }}€</p>
                 
                 <p v-if="(authStore.usuario?.saldo || 0) < importeAPagar" class="text-red-600 text-sm mt-2 font-semibold flex items-center bg-red-50 p-2 rounded-md">

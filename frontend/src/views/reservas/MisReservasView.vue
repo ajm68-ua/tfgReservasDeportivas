@@ -14,6 +14,7 @@ const authStore = useAuthStore()
 
 const reservas = ref([])
 const cargando = ref(true)
+const isProcessing = ref(false)
 
 onMounted(async () => {
   if (!authStore.isLogged()) {
@@ -38,8 +39,10 @@ async function cargarReservas() {
 }
 
 async function cancelarReserva(id) {
+  if (isProcessing.value) return
   if (!confirm('¿Estás seguro de que quieres cancelar esta reserva?')) return
 
+  isProcessing.value = true
   try {
     await api.put(`/reservas/${id}/cancelar`)
     
@@ -56,12 +59,16 @@ async function cancelarReserva(id) {
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al cancelar la reserva')
+  } finally {
+    isProcessing.value = false
   }
 }
 
 async function eliminarDefinitivamente(id) {
+  if (isProcessing.value) return
   if (!confirm('¿Estás seguro de que quieres eliminar esta reserva del historial? Esta acción no se puede deshacer.')) return
 
+  isProcessing.value = true
   try {
     await api.delete(`/reservas/${id}`)
     toast.success('Reserva eliminada del historial')
@@ -69,10 +76,14 @@ async function eliminarDefinitivamente(id) {
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al eliminar la reserva')
+  } finally {
+    isProcessing.value = false
   }
 }
 
 async function reReservar(reserva) {
+  if (isProcessing.value) return
+  isProcessing.value = true
   try {
     await api.put(`/reservas/${reserva.id}/reactivar`)
     toast.success('Reserva reactivada con éxito. Vuelve a estar pendiente de pago.')
@@ -80,6 +91,8 @@ async function reReservar(reserva) {
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al reactivar la reserva')
+  } finally {
+    isProcessing.value = false
   }
 }
 </script>
