@@ -34,6 +34,7 @@ erDiagram
         text descripcion
         boolean notificaciones_partidas
         boolean notificaciones_chat
+        decimal saldo
     }
 
     Centros_Deportivos {
@@ -65,17 +66,15 @@ erDiagram
         time hora_inicio
         time hora_fin
         decimal precio_total
-        enum estado_pago
+        varchar estado_pago
         enum nivel
         boolean es_abierta
         datetime fecha_creacion
     }
 
-    Participantes_Partida {
-        int id PK
+    reserva_participantes {
         int reserva_id FK
         int usuario_id FK
-        datetime fecha_inscripcion
     }
 
     Mensajes_Chat {
@@ -109,8 +108,8 @@ erDiagram
     Centros_Deportivos ||--o{ Usuarios : "administrado por"
     Pistas ||--o{ Reservas : "se reserva en"
     Usuarios ||--o{ Reservas : "organiza"
-    Reservas ||--o{ Participantes_Partida : "tiene"
-    Usuarios ||--o{ Participantes_Partida : "participa en"
+    Reservas ||--o{ reserva_participantes : "tiene"
+    Usuarios ||--o{ reserva_participantes : "participa en"
     Reservas ||--o{ Mensajes_Chat : "tiene"
     Usuarios ||--o{ Mensajes_Chat : "escribe"
     Reservas ||--o{ Resenas_Usuarios : "genera"
@@ -125,5 +124,5 @@ erDiagram
 |---|---|
 | `RolUsuario` | `DEPORTISTA` · `ADMINISTRADOR_CENTRO` |
 | `Deporte` | `PADEL` · `TENIS` · `FUTBOL` · `BALONCESTO` · `SQUASH` · `BADMINTON` |
-| `EstadoPago` | `PENDIENTE` · `PAGADO` · `CANCELADO` |
+| `EstadoPago` | `PENDIENTE` · `PAGO_PARCIAL` · `PAGADO` · `CANCELADO` |
 | `Nivel` | `PRINCIPIANTE` · `INTERMEDIO` · `AVANZADO` · `PROFESIONAL` |
