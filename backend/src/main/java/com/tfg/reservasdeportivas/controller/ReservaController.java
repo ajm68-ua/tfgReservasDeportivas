@@ -67,6 +67,16 @@ public class ReservaController {
         }
     }
 
+    @PostMapping("/{id}/unirse")
+    public ResponseEntity<Void> unirsePartidaAbierta(@PathVariable Integer id, @RequestParam Integer usuarioId) {
+        try {
+            reservaService.unirsePartidaAbierta(id, usuarioId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ReservaDTO> modificarReserva(@PathVariable Integer id, @RequestBody ReservaDTO dto) {
         try {

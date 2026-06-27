@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 defineProps({
   reserva: {
     type: Object,
@@ -17,9 +19,16 @@ function formatearHora(horaStr) {
   return horaStr.substring(0, 5)
 }
 
+function haPasadoCalculado(reserva) {
+  if (!reserva.fecha || !reserva.horaInicio) return false
+  const fechaStr = `${reserva.fecha}T${reserva.horaInicio}`
+  return new Date(fechaStr) < new Date()
+}
+
 function etiquetaEstado(estado) {
   switch (estado) {
     case 'PENDIENTE': return 'bg-yellow-100 text-yellow-800'
+    case 'PAGO_PARCIAL': return 'bg-orange-100 text-orange-800'
     case 'PAGADO': return 'bg-green-100 text-green-700'
     case 'CANCELADO': return 'bg-red-100 text-red-700'
     default: return 'bg-gray-100 text-gray-800'
@@ -39,7 +48,7 @@ function etiquetaEstado(estado) {
           class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider whitespace-nowrap"
           :class="etiquetaEstado(reserva.estadoPago)"
         >
-          {{ reserva.estadoPago }}
+          {{ reserva.estadoPago.replace('_', ' ') }}
         </span>
       </div>
       
@@ -52,6 +61,9 @@ function etiquetaEstado(estado) {
           <span class="font-medium">Tipo:</span>
           <span class="font-bold text-gray-900">
             {{ reserva.esAbierta ? 'Partida Abierta' : 'Partida Privada' }}
+            <span v-if="reserva.esAbierta && reserva.participantesIds" class="text-xs text-blue-600 ml-1">
+              ({{ reserva.participantesIds.length }}/{{ reserva.capacidadMaxima || 4 }})
+            </span>
           </span>
         </p>
         <p class="text-sm text-gray-600 flex justify-between">
@@ -69,31 +81,36 @@ function etiquetaEstado(estado) {
       </div>
 
       <div class="pt-4 border-t border-gray-100 flex flex-col gap-2.5">
-        <button 
-          v-if="reserva.estadoPago === 'PENDIENTE'"
-          @click="emit('pagar', reserva.id)"
-          class="w-full py-2.5 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700 transition shadow-md hover:shadow-lg"
-        >
-          Pagar Ahora
-        </button>
         
-        <div v-if="reserva.estadoPago !== 'CANCELADO'" class="flex gap-2.5">
+        <template v-if="!haPasadoCalculado(reserva)">
           <button 
-            @click="emit('editar', reserva.id)"
-            class="flex-1 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition shadow-md hover:shadow-lg"
+            v-if="reserva.estadoPago === 'PENDIENTE'"
+            @click="emit('pagar', reserva.id)"
+            class="w-full py-2.5 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700 transition shadow-md hover:shadow-lg"
           >
-            Modificar
+            Pagar Ahora
           </button>
-          <button 
-            @click="emit('cancelar', reserva.id)"
-            class="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition shadow-md hover:shadow-lg"
-          >
-            Cancelar
-          </button>
-        </div>
+          
+          <div v-if="reserva.estadoPago !== 'CANCELADO'" class="flex gap-2.5">
+            <button 
+              v-if="reserva.estadoPago === 'PENDIENTE'"
+              @click="emit('editar', reserva.id)"
+              class="flex-1 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition shadow-md hover:shadow-lg"
+            >
+              Modificar
+            </button>
+            <button 
+              @click="emit('cancelar', reserva.id)"
+              class="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition shadow-md hover:shadow-lg"
+            >
+              Cancelar
+            </button>
+          </div>
+        </template>
 
-        <div v-if="reserva.estadoPago === 'CANCELADO'" class="flex gap-2.5">
+        <div v-if="reserva.estadoPago === 'CANCELADO' || haPasadoCalculado(reserva)" class="flex gap-2.5">
           <button 
+            v-if="reserva.estadoPago === 'CANCELADO' && !haPasadoCalculado(reserva)"
             @click="emit('re-reservar', reserva)"
             class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-md hover:shadow-lg"
           >

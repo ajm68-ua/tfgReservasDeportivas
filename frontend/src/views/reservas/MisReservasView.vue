@@ -42,6 +42,15 @@ async function cancelarReserva(id) {
 
   try {
     await api.put(`/reservas/${id}/cancelar`)
+    
+    try {
+      const userRes = await api.get(`/usuarios/${authStore.usuario.id}`)
+      authStore.usuario = userRes.data
+      localStorage.setItem('usuario', JSON.stringify(userRes.data))
+    } catch (e) {
+      console.error('Error actualizando perfil:', e)
+    }
+
     toast.success('Reserva cancelada correctamente')
     await cargarReservas()
   } catch (err) {
