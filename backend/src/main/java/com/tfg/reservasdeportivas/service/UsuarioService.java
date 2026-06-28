@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
+import com.tfg.reservasdeportivas.model.ResenaUsuario;
 
 @Service
 public class UsuarioService {
@@ -163,6 +165,18 @@ public class UsuarioService {
 
         usuario.setRol(RolUsuario.DEPORTISTA);
         usuario.setCentro(null);
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void recalcularValoracionMedia(Integer usuarioId, List<ResenaUsuario> resenas) {
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow();
+        if (resenas.isEmpty()) {
+            usuario.setValoracionMedia(BigDecimal.ZERO);
+        } else {
+            double average = resenas.stream().mapToInt(ResenaUsuario::getPuntuacion).average().orElse(0.0);
+            usuario.setValoracionMedia(BigDecimal.valueOf(average));
+        }
         usuarioRepository.save(usuario);
     }
 }

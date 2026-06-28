@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
   reserva: {
@@ -8,7 +9,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['pagar', 'editar', 'cancelar', 're-reservar', 'eliminar'])
+const authStore = useAuthStore()
+
+const emit = defineEmits(['pagar', 'editar', 'cancelar', 're-reservar', 'eliminar', 'abandonar'])
+
+const isOrganizer = computed(() => {
+  return props.reserva.organizadorId === authStore.usuario?.id
+})
 
 function formatearFecha(fechaStr) {
   const [year, month, day] = fechaStr.split('-')
@@ -66,6 +73,15 @@ function etiquetaEstado(estado) {
             </span>
           </span>
         </p>
+        
+        <div v-if="reserva.esAbierta && reserva.jugadoresDetalle && reserva.jugadoresDetalle.length > 0" class="flex -space-x-2 pt-2 pb-1">
+          <template v-for="jugador in reserva.jugadoresDetalle" :key="jugador.id">
+            <router-link :to="'/usuario/' + jugador.id" class="relative hover:-translate-y-1 hover:z-10 hover:scale-110 transition-transform duration-200">
+              <img v-if="jugador.foto" :src="jugador.foto" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" :title="jugador.nombre" />
+              <div v-else class="w-8 h-8 rounded-full border-2 border-white shadow-sm bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold" :title="jugador.nombre">{{ jugador.nombre.charAt(0) }}</div>
+            </router-link>
+          </template>
+        </div>
         <p class="text-sm text-gray-600 flex justify-between">
           <span class="font-medium">Fecha:</span>
           <span class="font-bold text-gray-900">{{ formatearFecha(reserva.fecha) }}</span>
@@ -83,7 +99,16 @@ function etiquetaEstado(estado) {
       <div class="pt-4 border-t border-gray-100 flex flex-col gap-2.5">
         
         <template v-if="!haPasado">
-          <button 
+          <div v-if="!isOrganizer" class="flex gap-2.5">
+            <button 
+              @click="emit('abandonar', reserva.id)"
+              class="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition shadow-md hover:shadow-lg"
+            >
+              Cancelar (Abandonar)
+            </button>
+          </div>
+          <template v-else>
+            <button 
             v-if="reserva.estadoPago === 'PENDIENTE'"
             @click="emit('pagar', reserva.id)"
             class="w-full py-2.5 bg-green-600 text-white rounded-xl text-sm font-semibold hover:bg-green-700 transition shadow-md hover:shadow-lg"
@@ -106,9 +131,10 @@ function etiquetaEstado(estado) {
               Cancelar
             </button>
           </div>
+          </template>
         </template>
 
-        <div v-if="reserva.estadoPago === 'CANCELADO' || haPasado" class="flex gap-2.5">
+        <div v-if="isOrganizer && (reserva.estadoPago === 'CANCELADO' || haPasado)" class="flex gap-2.5">
           <button 
             v-if="reserva.estadoPago === 'CANCELADO' && !haPasado"
             @click="emit('re-reservar', reserva)"

@@ -33,12 +33,9 @@ const bloquesSeleccionados = ref(props.initialData.bloquesSeleccionados ? [...pr
 
 const bloquesHorarios = ref([])
 
-const niveles = [
-  { value: 'PRINCIPIANTE', label: 'Principiante' },
-  { value: 'INTERMEDIO', label: 'Intermedio' },
-  { value: 'AVANZADO', label: 'Avanzado' },
-  { value: 'PROFESIONAL', label: 'Profesional' }
-]
+import { NIVELES_OPCIONES } from '@/utils/constants'
+
+const niveles = NIVELES_OPCIONES
 
 const fechaMinima = computed(() => getFechaLocal())
 

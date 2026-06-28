@@ -19,12 +19,24 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('usuario')
   }
 
+  async function refreshUser(api) {
+    if (!usuario.value) return
+    try {
+      const res = await api.get(`/usuarios/${usuario.value.id}`)
+      usuario.value = res.data
+      localStorage.setItem('usuario', JSON.stringify(res.data))
+    } catch (e) {
+      console.error('Error actualizando perfil desde el servidor:', e)
+    }
+  }
+
   return {
     usuario,
     isLogged,
     isAdmin,
     isDeportista,
     login,
-    logout
+    logout,
+    refreshUser
   }
 })

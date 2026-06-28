@@ -2,6 +2,7 @@ package com.tfg.reservasdeportivas.dto;
 
 import com.tfg.reservasdeportivas.model.enums.EstadoPago;
 import com.tfg.reservasdeportivas.model.enums.Nivel;
+import com.tfg.reservasdeportivas.model.enums.Deporte;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ReservaDTO implements Serializable {
 
@@ -27,8 +30,11 @@ public class ReservaDTO implements Serializable {
     private Nivel nivel;
     private Boolean esAbierta;
     private LocalDateTime fechaCreacion;
-    private java.util.List<Integer> participantesIds = new java.util.ArrayList<>();
+    private List<Integer> participantesIds = new ArrayList<>();
     private Integer capacidadMaxima;
+    private Deporte deporte;
+    private String centroFoto;
+    private List<UsuarioDTO> jugadoresDetalle = new ArrayList<>();
 
     public ReservaDTO() {
     }
@@ -78,11 +84,20 @@ public class ReservaDTO implements Serializable {
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
-    public java.util.List<Integer> getParticipantesIds() { return participantesIds; }
-    public void setParticipantesIds(java.util.List<Integer> participantesIds) { this.participantesIds = participantesIds; }
+    public List<Integer> getParticipantesIds() { return participantesIds; }
+    public void setParticipantesIds(List<Integer> participantesIds) { this.participantesIds = participantesIds; }
 
     public Integer getCapacidadMaxima() { return capacidadMaxima; }
     public void setCapacidadMaxima(Integer capacidadMaxima) { this.capacidadMaxima = capacidadMaxima; }
+
+    public Deporte getDeporte() { return deporte; }
+    public void setDeporte(Deporte deporte) { this.deporte = deporte; }
+
+    public String getCentroFoto() { return centroFoto; }
+    public void setCentroFoto(String centroFoto) { this.centroFoto = centroFoto; }
+
+    public List<UsuarioDTO> getJugadoresDetalle() { return jugadoresDetalle; }
+    public void setJugadoresDetalle(List<UsuarioDTO> jugadoresDetalle) { this.jugadoresDetalle = jugadoresDetalle; }
 
 
     @Override

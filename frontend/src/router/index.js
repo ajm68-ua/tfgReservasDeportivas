@@ -149,6 +149,12 @@ const routes = [
     component: PerfilView,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/usuario/:id',
+    name: 'perfil-publico',
+    component: () => import('@/views/perfil/PerfilPublicoView.vue'),
+    meta: { requiresAuth: true },
+  },
 
   {
     path: '/admin',

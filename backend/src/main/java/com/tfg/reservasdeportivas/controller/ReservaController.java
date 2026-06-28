@@ -24,6 +24,11 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.obtenerReservasPorPistaYFecha(pistaId, fecha));
     }
 
+    @GetMapping("/abiertas")
+    public ResponseEntity<List<ReservaDTO>> obtenerPartidasAbiertas() {
+        return ResponseEntity.ok(reservaService.obtenerPartidasAbiertas());
+    }
+
     @PostMapping
     public ResponseEntity<ReservaDTO> crearReserva(@RequestBody ReservaDTO dto) {
         try {
@@ -68,12 +73,22 @@ public class ReservaController {
     }
 
     @PostMapping("/{id}/unirse")
-    public ResponseEntity<Void> unirsePartidaAbierta(@PathVariable Integer id, @RequestParam Integer usuarioId) {
+    public ResponseEntity<?> unirsePartidaAbierta(@PathVariable Integer id, @RequestParam Integer usuarioId) {
         try {
             reservaService.unirsePartidaAbierta(id, usuarioId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{id}/abandonar")
+    public ResponseEntity<?> abandonarPartidaAbierta(@PathVariable Integer id, @RequestParam Integer usuarioId) {
+        try {
+            reservaService.abandonarPartidaAbierta(id, usuarioId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
         }
     }
 

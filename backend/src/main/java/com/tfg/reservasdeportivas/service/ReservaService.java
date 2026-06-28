@@ -1,6 +1,7 @@
 package com.tfg.reservasdeportivas.service;
 
 import com.tfg.reservasdeportivas.dto.ReservaDTO;
+import com.tfg.reservasdeportivas.dto.UsuarioDTO;
 import com.tfg.reservasdeportivas.model.Pista;
 import com.tfg.reservasdeportivas.model.Reserva;
 import com.tfg.reservasdeportivas.model.Usuario;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -37,18 +39,31 @@ public class ReservaService {
 
 
 
+    private ReservaDTO mapToDTO(Reserva reserva) {
+        ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
+        if (reserva.getParticipantes() != null) {
+            dto.setParticipantesIds(reserva.getParticipantes().stream().map(Usuario::getId).collect(Collectors.toList()));
+            dto.setJugadoresDetalle(reserva.getParticipantes().stream().map(u -> modelMapper.map(u, UsuarioDTO.class)).collect(Collectors.toList()));
+        }
+        if (reserva.getPista() != null) {
+            dto.setCapacidadMaxima(reserva.getPista().getCapacidadMaxima());
+            dto.setDeporte(reserva.getPista().getDeporte());
+            if (reserva.getPista().getCentro() != null) {
+                dto.setCentroFoto(reserva.getPista().getCentro().getFoto());
+            }
+        }
+        return dto;
+    }
+
+    public List<ReservaDTO> obtenerPartidasAbiertas() {
+        return reservaRepository.findPartidasAbiertasFuturas().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<ReservaDTO> obtenerReservasPorPistaYFecha(Integer pistaId, LocalDate fecha) {
         return reservaRepository.findByPistaIdAndFecha(pistaId, fecha).stream()
-                .map(reserva -> {
-                    ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
-                    if (reserva.getParticipantes() != null) {
-                        dto.setParticipantesIds(reserva.getParticipantes().stream().map(Usuario::getId).collect(Collectors.toList()));
-                    }
-                    if (reserva.getPista() != null) {
-                        dto.setCapacidadMaxima(reserva.getPista().getCapacidadMaxima());
-                    }
-                    return dto;
-                })
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -70,8 +85,8 @@ public class ReservaService {
             throw new IllegalArgumentException("La pista no está disponible");
         }
 
-        java.time.LocalTime apertura = pista.getCentro().getHorarioApertura();
-        java.time.LocalTime cierre = pista.getCentro().getHorarioCierre();
+        LocalTime apertura = pista.getCentro().getHorarioApertura();
+        LocalTime cierre = pista.getCentro().getHorarioCierre();
         if (horaInicio.isBefore(apertura) || horaFin.isAfter(cierre)) {
             throw new IllegalArgumentException("El horario seleccionado está fuera del horario de apertura del centro");
         }
@@ -105,46 +120,41 @@ public class ReservaService {
         Reserva reserva = modelMapper.map(dto, Reserva.class);
         reserva.setPista(pista);
         reserva.setOrganizador(organizador);
-        reserva.setEstadoPago(EstadoPago.PENDIENTE);
-        reserva.setPrecioTotal(calcularPrecioTotal(dto.getHoraInicio(), dto.getHoraFin(), pista.getPrecioPorHora()));
+        BigDecimal precioTotal = calcularPrecioTotal(dto.getHoraInicio(), dto.getHoraFin(), pista.getPrecioPorHora());
+        reserva.setPrecioTotal(precioTotal);
+
+        if (Boolean.TRUE.equals(dto.getEsAbierta())) {
+            Integer capacidad = pista.getCapacidadMaxima();
+            if (capacidad == null || capacidad == 0) capacidad = 4;
+            
+            BigDecimal cuota = precioTotal.divide(BigDecimal.valueOf(capacidad), 2, java.math.RoundingMode.HALF_UP);
+            
+            if (organizador.getSaldo().compareTo(cuota) < 0) {
+                throw new IllegalArgumentException("Saldo insuficiente para pagar tu parte al organizar la partida abierta.");
+            }
+            organizador.setSaldo(organizador.getSaldo().subtract(cuota));
+            usuarioRepository.save(organizador);
+            
+            reserva.getParticipantes().add(organizador);
+            reserva.setEstadoPago(EstadoPago.PAGO_PARCIAL);
+        } else {
+            reserva.setEstadoPago(EstadoPago.PENDIENTE);
+        }
 
         Reserva guardada = reservaRepository.save(reserva);
-        ReservaDTO result = modelMapper.map(guardada, ReservaDTO.class);
-        if (guardada.getParticipantes() != null) {
-            result.setParticipantesIds(guardada.getParticipantes().stream().map(Usuario::getId).collect(Collectors.toList()));
-        }
-        if (guardada.getPista() != null) {
-            result.setCapacidadMaxima(guardada.getPista().getCapacidadMaxima());
-        }
-        return result;
+        return mapToDTO(guardada);
     }
 
     public List<ReservaDTO> obtenerReservasPorUsuario(Integer usuarioId) {
         return reservaRepository.findByOrganizadorIdOrderByFechaDescHoraInicioDesc(usuarioId).stream()
-                .map(reserva -> {
-                    ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
-                    if (reserva.getParticipantes() != null) {
-                        dto.setParticipantesIds(reserva.getParticipantes().stream().map(Usuario::getId).collect(Collectors.toList()));
-                    }
-                    if (reserva.getPista() != null) {
-                        dto.setCapacidadMaxima(reserva.getPista().getCapacidadMaxima());
-                    }
-                    return dto;
-                })
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     public ReservaDTO obtenerReservaPorId(Integer id) {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
-        ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
-        if (reserva.getParticipantes() != null) {
-            dto.setParticipantesIds(reserva.getParticipantes().stream().map(Usuario::getId).collect(Collectors.toList()));
-        }
-        if (reserva.getPista() != null) {
-            dto.setCapacidadMaxima(reserva.getPista().getCapacidadMaxima());
-        }
-        return dto;
+        return mapToDTO(reserva);
     }
 
     public void cancelarReserva(Integer id) {
@@ -293,6 +303,60 @@ public class ReservaService {
         reservaRepository.save(reserva);
     }
 
+    public void abandonarPartidaAbierta(Integer reservaId, Integer usuarioId) {
+        Reserva reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
+
+        if (reserva.getEsAbierta() == null || !reserva.getEsAbierta()) {
+            throw new IllegalArgumentException("No puedes abandonar una partida cerrada.");
+        }
+
+        if (reserva.getFecha().isBefore(java.time.LocalDate.now()) || 
+           (reserva.getFecha().isEqual(java.time.LocalDate.now()) && reserva.getHoraInicio().isBefore(java.time.LocalTime.now()))) {
+            throw new IllegalArgumentException("No puedes abandonar una partida pasada o ya comenzada.");
+        }
+
+        if (reserva.getEstadoPago() == EstadoPago.CANCELADO) {
+            throw new IllegalArgumentException("La partida ya está cancelada.");
+        }
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        boolean inscrito = reserva.getParticipantes().removeIf(u -> u.getId().equals(usuarioId));
+        if (!inscrito) {
+            throw new IllegalArgumentException("No estás inscrito en esta partida.");
+        }
+
+        Integer capacidad = reserva.getPista().getCapacidadMaxima();
+        if (capacidad == null || capacidad == 0) capacidad = 4;
+        BigDecimal cuota = reserva.getPrecioTotal().divide(BigDecimal.valueOf(capacidad), 2, java.math.RoundingMode.HALF_UP);
+
+        usuario.setSaldo(usuario.getSaldo().add(cuota));
+        usuarioRepository.save(usuario);
+
+        if (reserva.getOrganizador().getId().equals(usuarioId)) {
+            if (reserva.getParticipantes().isEmpty()) {
+                reserva.setEstadoPago(EstadoPago.CANCELADO);
+            } else {
+                Usuario nuevoOrganizador = reserva.getParticipantes().get(0);
+                reserva.setOrganizador(nuevoOrganizador);
+                if (reserva.getEstadoPago() == EstadoPago.PAGADO) {
+                    reserva.setEstadoPago(EstadoPago.PAGO_PARCIAL);
+                }
+            }
+        } else {
+            if (reserva.getEstadoPago() == EstadoPago.PAGADO) {
+                reserva.setEstadoPago(EstadoPago.PAGO_PARCIAL);
+            }
+            if (reserva.getParticipantes().isEmpty()) {
+                reserva.setEstadoPago(EstadoPago.CANCELADO);
+            }
+        }
+
+        reservaRepository.save(reserva);
+    }
+
     public ReservaDTO modificarReserva(Integer id, ReservaDTO dto) {
         Reserva reservaExistente = reservaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada"));
@@ -317,13 +381,6 @@ public class ReservaService {
         reservaExistente.setPrecioTotal(calcularPrecioTotal(dto.getHoraInicio(), dto.getHoraFin(), pista.getPrecioPorHora()));
 
         Reserva guardada = reservaRepository.save(reservaExistente);
-        ReservaDTO result = modelMapper.map(guardada, ReservaDTO.class);
-        if (guardada.getParticipantes() != null) {
-            result.setParticipantesIds(guardada.getParticipantes().stream().map(Usuario::getId).collect(Collectors.toList()));
-        }
-        if (guardada.getPista() != null) {
-            result.setCapacidadMaxima(guardada.getPista().getCapacidadMaxima());
-        }
-        return result;
+        return mapToDTO(guardada);
     }
 }
