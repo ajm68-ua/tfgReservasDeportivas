@@ -50,6 +50,7 @@ async function cancelarReserva(id) {
 
     toast.success('Reserva cancelada correctamente')
     await cargarReservas()
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al cancelar la reserva')
@@ -69,6 +70,7 @@ async function abandonarPartida(id) {
 
     toast.success('Has abandonado la partida con éxito')
     await cargarReservas()
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al abandonar la partida')
@@ -86,6 +88,7 @@ async function eliminarDefinitivamente(id) {
     await api.delete(`/reservas/${id}`)
     toast.success('Reserva eliminada del historial')
     await cargarReservas()
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al eliminar la reserva')

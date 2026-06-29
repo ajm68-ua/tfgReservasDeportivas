@@ -10,6 +10,7 @@ public class MensajeChatDTO implements Serializable {
     private Integer reservaId;
     private Integer usuarioId;
     private String nombreUsuario;
+    private String apellidosUsuario;
     private String fotoUsuario;
     private String mensaje;
     private LocalDateTime fechaEnvio;
@@ -28,6 +29,9 @@ public class MensajeChatDTO implements Serializable {
 
     public String getNombreUsuario() { return nombreUsuario; }
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
+
+    public String getApellidosUsuario() { return apellidosUsuario; }
+    public void setApellidosUsuario(String apellidosUsuario) { this.apellidosUsuario = apellidosUsuario; }
 
     public String getFotoUsuario() { return fotoUsuario; }
     public void setFotoUsuario(String fotoUsuario) { this.fotoUsuario = fotoUsuario; }

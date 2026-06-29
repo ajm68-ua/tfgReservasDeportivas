@@ -18,10 +18,7 @@ import ReservaDetailView from '@/views/reservas/ReservaDetailView.vue'
 import MisReservasView from '@/views/reservas/MisReservasView.vue'
 import ReservaEditView from '@/views/reservas/ReservaEditView.vue'
 import ReservaPagoView from '@/views/reservas/ReservaPagoView.vue'
-
 import PartidasAbiertasView from '@/views/partidas/PartidasAbiertasView.vue'
-
-import ChatReservaView from '@/views/chat/ChatReservaView.vue'
 
 import ResenasView from '@/views/resenas/ResenasView.vue'
 
@@ -125,12 +122,7 @@ const routes = [
     component: PartidasAbiertasView,
     meta: { requiresAuth: true, rol: 'DEPORTISTA' },
   },
-  {
-    path: '/reservas/:id/chat',
-    name: 'chat-reserva',
-    component: ChatReservaView,
-    meta: { requiresAuth: true },
-  },
+
   {
     path: '/reservas/:id/resenas',
     name: 'resenas',

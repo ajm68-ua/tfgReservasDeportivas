@@ -72,6 +72,7 @@ async function confirmarReserva(datosReserva) {
     await authStore.refreshUser(api)
 
     toast.success('Reserva confirmada con éxito')
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
     router.push('/mis-reservas')
   } catch (err) {
     console.error(err)

@@ -67,6 +67,7 @@ async function unirsePartida(partidaId) {
 
     toast.success('¡Te has unido a la partida con éxito!')
     await cargarPartidas()
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al unirse a la partida')
@@ -89,6 +90,7 @@ async function abandonarPartida(partidaId) {
 
     toast.success('Has abandonado la partida con éxito')
     await cargarPartidas()
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al abandonar la partida')

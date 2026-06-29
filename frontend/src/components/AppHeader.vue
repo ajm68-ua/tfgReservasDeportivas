@@ -15,11 +15,11 @@ function cerrarSesion() {
   router.push('/login')
 }
 
-const userInitials = computed(() => {
+const inicialesUsuario = computed(() => {
   if (!authStore.usuario) return ''
   const n = authStore.usuario.nombre ? authStore.usuario.nombre.charAt(0).toUpperCase() : ''
-  const a = authStore.usuario.apellidos ? authStore.usuario.apellidos.charAt(0).toUpperCase() : ''
-  return n + a
+  const a = authStore.usuario.apellidos ? authStore.usuario.apellidos.trim().split(/\s+/)[0].charAt(0).toUpperCase() : ''
+  return (n + a) || 'U'
 })
 </script>
 
@@ -60,7 +60,7 @@ const userInitials = computed(() => {
           
           <button @click="menuAbierto = !menuAbierto" class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold overflow-hidden">
             <img v-if="authStore.usuario.foto" :src="authStore.usuario.foto" alt="Perfil" class="w-full h-full object-cover" />
-            <span v-else>{{ userInitials }}</span>
+            <span v-else>{{ inicialesUsuario }}</span>
           </button>
 
           <div v-if="menuAbierto" class="absolute right-0 top-12 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 border border-gray-100 animate-fade-in-down">
