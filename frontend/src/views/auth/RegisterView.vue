@@ -5,13 +5,9 @@ import api from '@/services/api.js'
 
 const router = useRouter()
 
-const niveles = ['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO', 'PROFESIONAL']
-const nivelesLabel = {
-  PRINCIPIANTE: 'Principiante',
-  INTERMEDIO: 'Intermedio',
-  AVANZADO: 'Avanzado',
-  PROFESIONAL: 'Profesional',
-}
+import { NIVELES_OPCIONES } from '@/utils/constants'
+
+const niveles = NIVELES_OPCIONES
 
 const cargando = ref(false)
 const errorMensaje = ref('')
@@ -200,16 +196,16 @@ async function registrar() {
           </label>
           <div class="flex flex-wrap gap-1.5 sm:grid sm:grid-cols-4 sm:gap-2">
             <button
-              v-for="n in niveles"
-              :key="n"
+              v-for="opcion in niveles"
+              :key="opcion.value"
               type="button"
-              @click="form.nivel = n"
+              @click="form.nivel = opcion.value"
               class="py-2 px-2 rounded-lg text-[13px] font-medium transition-all duration-200 outline-none flex-1 sm:flex-none text-center"
-              :class="form.nivel === n
+              :class="form.nivel === opcion.value
                 ? 'border-2 border-blue-600 bg-blue-50 text-blue-600'
                 : 'border-2 border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'"
             >
-              {{ nivelesLabel[n] }}
+              {{ opcion.label }}
             </button>
           </div>
         </div>

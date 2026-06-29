@@ -2,6 +2,8 @@ package com.tfg.reservasdeportivas.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
 
 @Entity
 @Table(name = "resenas_usuarios")
@@ -11,8 +13,8 @@ public class ResenaUsuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "reserva_id", nullable = false)
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "reserva_id", nullable = true)
     private Reserva reserva;
 
     @ManyToOne(optional = false)
@@ -23,6 +25,8 @@ public class ResenaUsuario {
     @JoinColumn(name = "evaluado_id", nullable = false)
     private Usuario evaluado;
 
+    @Min(0)
+    @Max(5)
     private Integer puntuacion;
 
     @Lob

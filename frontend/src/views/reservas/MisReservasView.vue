@@ -46,19 +46,32 @@ async function cancelarReserva(id) {
   try {
     await api.put(`/reservas/${id}/cancelar`)
     
-    try {
-      const userRes = await api.get(`/usuarios/${authStore.usuario.id}`)
-      authStore.usuario = userRes.data
-      localStorage.setItem('usuario', JSON.stringify(userRes.data))
-    } catch (e) {
-      console.error('Error actualizando perfil:', e)
-    }
+    await authStore.refreshUser(api)
 
     toast.success('Reserva cancelada correctamente')
     await cargarReservas()
   } catch (err) {
     console.error(err)
     toast.error(err.response?.data?.message || 'Error al cancelar la reserva')
+  } finally {
+    isProcessing.value = false
+  }
+}
+
+async function abandonarPartida(id) {
+  if (isProcessing.value) return
+  if (!confirm('¿Quieres abandonar esta partida? Se te devolverá la parte proporcional de la pista a tu saldo.')) return
+
+  isProcessing.value = true
+  try {
+    await api.post(`/reservas/${id}/abandonar?usuarioId=${authStore.usuario.id}`)
+    await authStore.refreshUser(api)
+
+    toast.success('Has abandonado la partida con éxito')
+    await cargarReservas()
+  } catch (err) {
+    console.error(err)
+    toast.error(err.response?.data?.message || 'Error al abandonar la partida')
   } finally {
     isProcessing.value = false
   }
@@ -123,6 +136,7 @@ async function reReservar(reserva) {
           @pagar="id => router.push(`/reservas/${id}/pago`)"
           @editar="id => router.push(`/reservas/${id}/editar`)"
           @cancelar="cancelarReserva"
+          @abandonar="abandonarPartida"
           @re-reservar="reReservar"
           @eliminar="eliminarDefinitivamente"
         />

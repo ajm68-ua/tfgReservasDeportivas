@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { MAPA_DEPORTES, NIVELES_OPCIONES, DEPORTES_ENUM } from '@/utils/constants'
 import api from '@/services/api'
 
 const authStore = useAuthStore()
@@ -33,12 +34,7 @@ const formPassword = reactive({
   confirmarContrasena: ''
 })
 
-const niveles = [
-  { label: 'Principiante', value: 'PRINCIPIANTE' },
-  { label: 'Intermedio', value: 'INTERMEDIO' },
-  { label: 'Avanzado', value: 'AVANZADO' },
-  { label: 'Profesional', value: 'PROFESIONAL' }
-]
+const niveles = NIVELES_OPCIONES
 
 const userInitials = computed(() => {
   const n = formPerfil.nombre ? formPerfil.nombre.charAt(0).toUpperCase() : ''

@@ -3,6 +3,8 @@ package com.tfg.reservasdeportivas.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
 
 public class ResenaUsuarioDTO implements Serializable {
 
@@ -12,6 +14,8 @@ public class ResenaUsuarioDTO implements Serializable {
     private String nombreEvaluador;
     private Integer evaluadoId;
     private String nombreEvaluado;
+    @Min(0)
+    @Max(5)
     private Integer puntuacion;
     private String comentario;
     private LocalDateTime fechaCreacion;
