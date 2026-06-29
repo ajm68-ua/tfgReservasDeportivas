@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import { MAPA_DEPORTES } from '@/utils/constants'
+import { formatearHora, formatearDinero } from '@/utils/formatters'
 
 const props = defineProps({
   pista: { type: Object, required: true },
@@ -152,7 +153,7 @@ function submitForm() {
       </p>
     </div>
     <div class="text-right">
-      <p class="text-3xl font-extrabold text-black">{{ pista.precioPorHora }}€<span class="text-sm text-gray-500 font-bold"> / HORA</span></p>
+      <p class="text-3xl font-extrabold text-black">{{ formatearDinero(pista.precioPorHora) }}<span class="text-sm text-gray-500 font-bold"> / HORA</span></p>
     </div>
   </div>
 
@@ -241,7 +242,7 @@ function submitForm() {
           </div>
           <div class="flex justify-between">
             <span>Hora</span>
-            <span class="text-gray-900">{{ bloquesSeleccionados.length > 0 ? `${bloquesSeleccionados[0].start.substring(0,5)} - ${bloquesSeleccionados[bloquesSeleccionados.length-1].end.substring(0,5)}` : '--:--' }}</span>
+            <span class="text-gray-900">{{ bloquesSeleccionados.length > 0 ? `${formatearHora(bloquesSeleccionados[0].start)} - ${formatearHora(bloquesSeleccionados[bloquesSeleccionados.length-1].end)}` : '--:--' }}</span>
           </div>
           <div class="flex justify-between">
             <span>Pista</span>
@@ -250,7 +251,7 @@ function submitForm() {
           <div class="h-px bg-gray-200 my-4"></div>
           <div class="flex justify-between items-end">
             <span class="text-gray-500">Total a pagar</span>
-            <span class="text-3xl font-extrabold text-black">{{ precioTotal }}€</span>
+            <span class="text-3xl font-extrabold text-black">{{ formatearDinero(precioTotal) }}</span>
           </div>
         </div>
 

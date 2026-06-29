@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { MAPA_DEPORTES, NIVELES_OPCIONES, DEPORTES_ENUM } from '@/utils/constants'
 import api from '@/services/api'
+import { obtenerIniciales } from '@/utils/formatters'
 
 const authStore = useAuthStore()
 
@@ -37,9 +38,7 @@ const formPassword = reactive({
 const niveles = NIVELES_OPCIONES
 
 const inicialesUsuario = computed(() => {
-  const n = formPerfil.nombre ? formPerfil.nombre.charAt(0).toUpperCase() : ''
-  const a = formPerfil.apellidos ? formPerfil.apellidos.trim().split(/\s+/)[0].charAt(0).toUpperCase() : ''
-  return (n + a) || 'U'
+  return obtenerIniciales(formPerfil.nombre, formPerfil.apellidos)
 })
 
 const isFormChanged = computed(() => {

@@ -6,6 +6,7 @@ import api from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import { formatearFecha, formatearHora, formatearDinero } from '@/utils/formatters'
 
 const router = useRouter()
 const route = useRoute()
@@ -109,7 +110,7 @@ const procesarPago = async () => {
           </div>
           <div class="text-right">
             <p class="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Precio Total</p>
-            <p class="text-3xl font-extrabold text-black">{{ reserva.precioTotal.toFixed(2) }}€</p>
+            <p class="text-3xl font-extrabold text-black">{{ formatearDinero(reserva.precioTotal) }}</p>
           </div>
         </div>
 
@@ -126,13 +127,13 @@ const procesarPago = async () => {
                 <div>
                   <p class="text-sm text-gray-500 font-medium mb-1">Fecha</p>
                   <p class="text-lg font-semibold text-gray-900">
-                    {{ new Date(reserva.fecha).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
+                    {{ formatearFecha(reserva.fecha, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
                   </p>
                 </div>
                 <div>
                   <p class="text-sm text-gray-500 font-medium mb-1">Horario</p>
                   <p class="text-lg font-semibold text-gray-900">
-                    {{ reserva.horaInicio.substring(0,5) }} - {{ reserva.horaFin.substring(0,5) }}
+                    {{ formatearHora(reserva.horaInicio) }} - {{ formatearHora(reserva.horaFin) }}
                   </p>
                 </div>
                 <div>
@@ -155,22 +156,22 @@ const procesarPago = async () => {
               <div class="space-y-3 text-sm text-gray-600 font-medium mb-6">
                 <div class="flex justify-between">
                   <span>Subtotal Pista</span>
-                  <span class="text-gray-900">{{ reserva.precioTotal.toFixed(2) }}€</span>
+                  <span class="text-gray-900">{{ formatearDinero(reserva.precioTotal) }}</span>
                 </div>
                 <div v-if="reserva.esAbierta" class="flex justify-between text-blue-600">
                   <span>Descuento (Pago dividido)</span>
-                  <span>-{{ (reserva.precioTotal - importeAPagar).toFixed(2) }}€</span>
+                  <span>-{{ formatearDinero(reserva.precioTotal - importeAPagar) }}</span>
                 </div>
                 <div class="h-px bg-gray-200 my-4"></div>
                 <div class="flex justify-between items-end">
                   <span class="text-gray-500">Total a deducir</span>
-                  <span class="text-3xl font-extrabold text-black">{{ importeAPagar.toFixed(2) }}€</span>
+                  <span class="text-3xl font-extrabold text-black">{{ formatearDinero(importeAPagar) }}</span>
                 </div>
               </div>
 
               <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200">
                 <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Tu Saldo</p>
-                <p class="text-xl font-bold text-gray-900">{{ authStore.usuario?.saldo?.toFixed(2) || '0.00' }}€</p>
+                <p class="text-xl font-bold text-gray-900">{{ formatearDinero(authStore.usuario?.saldo) }}</p>
                 
                 <p v-if="(authStore.usuario?.saldo || 0) < importeAPagar" class="text-red-600 text-sm mt-2 font-semibold flex items-center bg-red-50 p-2 rounded-md">
                   <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>

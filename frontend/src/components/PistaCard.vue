@@ -2,6 +2,7 @@
 import { defineProps } from 'vue'
 import { RouterLink } from 'vue-router'
 import { IMAGEN_FALLBACK_PISTA } from '@/utils/constants'
+import { formatearDinero } from '@/utils/formatters'
 
 defineProps({
   pista: {
@@ -48,7 +49,7 @@ const imagenFallback = IMAGEN_FALLBACK_PISTA
 
     <div class="p-6 bg-gray-50 sm:w-52 flex flex-col items-center justify-center border-t sm:border-t-0 sm:border-l border-gray-100 text-center">
       <div class="mb-4">
-        <span class="text-3xl font-extrabold text-gray-900">{{ pista.precioPorHora }}€</span>
+        <span class="text-3xl font-extrabold text-gray-900">{{ formatearDinero(pista.precioPorHora) }}</span>
         <span class="block text-[10px] text-gray-500 uppercase font-bold tracking-widest mt-0.5">/ hora</span>
       </div>
       <div class="flex flex-col gap-2 w-full">

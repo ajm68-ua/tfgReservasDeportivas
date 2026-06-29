@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { obtenerIniciales, formatearFecha, formatearHora, formatearDinero } from '@/utils/formatters'
 
 const props = defineProps({
   reserva: {
@@ -17,14 +18,6 @@ const isOrganizer = computed(() => {
   return props.reserva.organizadorId === authStore.usuario?.id
 })
 
-function formatearFecha(fechaStr) {
-  const [year, month, day] = fechaStr.split('-')
-  return `${day}/${month}/${year}`
-}
-
-function formatearHora(horaStr) {
-  return horaStr.substring(0, 5)
-}
 
 const haPasado = computed(() => {
   if (!props.reserva.fecha || !props.reserva.horaInicio) return false
@@ -78,7 +71,7 @@ function etiquetaEstado(estado) {
           <template v-for="jugador in reserva.jugadoresDetalle" :key="jugador.id">
             <router-link :to="'/usuario/' + jugador.id" class="relative hover:-translate-y-1 hover:z-10 hover:scale-110 transition-transform duration-200">
               <img v-if="jugador.foto" :src="jugador.foto" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" :title="jugador.nombre" />
-              <div v-else class="w-8 h-8 rounded-full border-2 border-white shadow-sm bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold" :title="jugador.nombre">{{ jugador.nombre.charAt(0) }}</div>
+              <div v-else class="w-8 h-8 rounded-full border-2 border-white shadow-sm bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold" :title="jugador.nombre + ' ' + (jugador.apellidos || '')">{{ obtenerIniciales(jugador.nombre, jugador.apellidos) }}</div>
             </router-link>
           </template>
         </div>
@@ -92,7 +85,7 @@ function etiquetaEstado(estado) {
         </p>
         <p class="text-sm text-gray-600 flex justify-between mt-2 pt-2 border-t border-gray-100">
           <span class="font-medium">Total:</span>
-          <span class="font-bold text-gray-900 text-base">{{ reserva.precioTotal }}€</span>
+          <span class="font-bold text-gray-900 text-base">{{ formatearDinero(reserva.precioTotal) }}</span>
         </p>
       </div>
 

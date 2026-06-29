@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
+import { obtenerIniciales } from '@/utils/formatters'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -301,7 +302,7 @@ async function revocarAdmin(emailAdmin) {
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center">
           <div class="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold border-4 border-white shadow-md mb-4 overflow-hidden">
             <img v-if="authStore.usuario?.foto" :src="authStore.usuario.foto" alt="Foto perfil" class="w-full h-full object-cover" />
-            <span v-else>{{ formPerfil.nombre?.charAt(0) }}{{ formPerfil.apellidos?.charAt(0) }}</span>
+            <span v-else>{{ obtenerIniciales(formPerfil.nombre, formPerfil.apellidos) }}</span>
           </div>
           <h2 class="text-xl font-bold text-gray-900 mb-1">{{ formPerfil.nombre }} {{ formPerfil.apellidos }}</h2>
           <p class="text-sm font-semibold text-blue-600 mb-4">Administrador</p>
@@ -501,7 +502,7 @@ async function revocarAdmin(emailAdmin) {
                 <tr v-for="admin in administradores" :key="admin.id" class="bg-white border-b last:border-b-0 hover:bg-gray-50 transition">
                   <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
-                      {{ admin.nombre.charAt(0) }}{{ admin.apellidos.charAt(0) }}
+                      {{ obtenerIniciales(admin.nombre, admin.apellidos) }}
                     </div>
                     {{ admin.nombre }} {{ admin.apellidos }}
                   </td>

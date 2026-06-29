@@ -119,14 +119,15 @@ function limpiarFiltros() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <PageHeader 
-        title="Partidas Abiertas" 
-        description="Encuentra partidos a los que unirte y conoce nuevos compañeros de juego."
-      />
+  <div class="min-h-screen bg-gray-50 flex flex-col font-sans">
+    
+    <PageHeader 
+      title="Partidas Abiertas" 
+      subtitle="Encuentra partidos a los que unirte y conoce nuevos compañeros de juego."
+    />
 
+    <main class="max-w-7xl mx-auto px-6 lg:px-8 py-10 w-full flex-grow flex flex-col">
+      
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 mt-6">
         <div class="flex flex-col md:flex-row gap-4 items-end">
           <div class="flex-1 w-full">
@@ -177,6 +178,6 @@ function limpiarFiltros() {
         />
       </template>
 
-    </div>
+    </main>
   </div>
 </template>

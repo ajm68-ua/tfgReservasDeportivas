@@ -1,5 +1,6 @@
 <script setup>
 import { MAPA_DEPORTES } from '@/utils/constants'
+import { formatearDinero } from '@/utils/formatters'
 
 defineProps({
   pista: {
@@ -34,7 +35,7 @@ const emit = defineEmits(['toggle-disponibilidad', 'editar', 'eliminar'])
         </p>
         <p class="text-sm text-gray-600 flex justify-between">
           <span class="font-medium">Precio/hora:</span>
-          <span class="font-bold text-blue-600">{{ pista.precioPorHora }}€</span>
+          <span class="font-bold text-blue-600">{{ formatearDinero(pista.precioPorHora) }}</span>
         </p>
         <p class="text-sm text-gray-600 flex justify-between">
           <span class="font-medium">Capacidad:</span>

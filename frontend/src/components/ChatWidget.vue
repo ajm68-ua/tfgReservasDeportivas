@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import SockJS from 'sockjs-client/dist/sockjs'
 import { Client } from '@stomp/stompjs'
+import { obtenerIniciales, formatearFecha, formatearHora } from '@/utils/formatters'
 
 const authStore = useAuthStore()
 
@@ -133,16 +134,8 @@ const desplazarAbajo = async () => {
   }
 }
 
-const formatearFecha = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(date)
-}
-
-const obtenerIniciales = (name, surname) => {
-  const n = name ? name.charAt(0).toUpperCase() : 'U'
-  const a = surname ? surname.trim().split(/\s+/)[0].charAt(0).toUpperCase() : ''
-  return (n + a) || 'U'
+const formatearFechaLocal = (dateString) => {
+  return formatearFecha(dateString, { hour: '2-digit', minute: '2-digit' })
 }
 
 const totalNoLeidos = computed(() => {
@@ -180,12 +173,10 @@ onUnmounted(() => {
 <template>
   <div v-if="authStore.isLogged()" class="fixed bottom-6 right-6 z-50 font-sans flex flex-col items-end">
     
-    <!-- Widget Body -->
     <div 
       v-if="estaAbierto" 
       class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-80 sm:w-96 mb-4 flex flex-col overflow-hidden transition-all duration-300 transform origin-bottom-right h-[32rem]"
     >
-      <!-- Header -->
       <div class="bg-gray-900 text-white p-4 flex items-center justify-between shadow-sm">
         <div class="flex items-center gap-3">
           <button v-if="partidaSeleccionada" @click="volverALaLista" class="hover:bg-gray-700 p-2 rounded-full transition bg-gray-800 border border-gray-700 flex items-center justify-center w-8 h-8" title="Volver a la lista">
@@ -203,7 +194,6 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <!-- List of Matches -->
       <div v-if="!partidaSeleccionada" class="flex-1 overflow-y-auto bg-gray-50 p-2">
         <div v-if="cargando" class="flex justify-center items-center h-full text-gray-400">
           <i class="fas fa-spinner fa-spin text-2xl"></i>
@@ -221,7 +211,7 @@ onUnmounted(() => {
           >
             <div class="flex-1 min-w-0">
               <h4 class="font-bold text-gray-800 truncate text-lg">{{ match.nombrePista }}</h4>
-              <p class="text-sm text-gray-500 truncate">- {{ match.fecha }} a las {{ match.horaInicio ? match.horaInicio.substring(0,5) : '' }}</p>
+              <p class="text-sm text-gray-500 truncate">- {{ match.fecha }} a las {{ formatearHora(match.horaInicio) }}</p>
             </div>
             
             <div v-if="mensajesNoLeidos[match.id]" class="bg-red-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-sm">
@@ -231,9 +221,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Chat Room -->
       <div v-else class="flex-1 flex flex-col bg-gray-50 min-h-0">
-        <!-- Messages Area -->
         <div class="flex-1 p-4 overflow-y-auto flex flex-col gap-3" ref="contenedorMensajes">
           <div v-if="mensajes.length === 0" class="text-center text-gray-400 text-sm mt-10">
             No hay mensajes aún. ¡Escribe el primero!
@@ -245,7 +233,6 @@ onUnmounted(() => {
             class="flex items-end gap-2 w-full"
             :class="msg.usuarioId === authStore.usuario.id ? 'justify-end' : 'justify-start'"
           >
-            <!-- Avatar for others (left) -->
             <div v-if="msg.usuarioId !== authStore.usuario.id" class="flex-shrink-0">
               <img v-if="msg.fotoUsuario" :src="msg.fotoUsuario" alt="Perfil" class="w-8 h-8 rounded-full object-cover border border-gray-200 shadow-sm" />
               <div v-else class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-xs font-bold border border-gray-300 shadow-sm">
@@ -253,7 +240,6 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <!-- Message bubble container -->
             <div 
               class="flex flex-col max-w-[75%]"
               :class="msg.usuarioId === authStore.usuario.id ? 'items-end' : 'items-start'"
@@ -265,10 +251,9 @@ onUnmounted(() => {
               >
                 {{ msg.mensaje }}
               </div>
-              <span class="text-[9px] text-gray-400 mt-1 px-1">{{ formatearFecha(msg.fechaEnvio) }}</span>
+              <span class="text-[9px] text-gray-400 mt-1 px-1">{{ formatearFechaLocal(msg.fechaEnvio) }}</span>
             </div>
 
-            <!-- Avatar for current user (right) -->
             <div v-if="msg.usuarioId === authStore.usuario.id" class="flex-shrink-0">
               <img v-if="msg.fotoUsuario" :src="msg.fotoUsuario" alt="Perfil" class="w-8 h-8 rounded-full object-cover border border-gray-200 shadow-sm" />
               <div v-else class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold border border-blue-200 shadow-sm">
@@ -278,7 +263,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Input Area -->
         <div class="p-3 bg-white border-t border-gray-200">
           <form @submit.prevent="enviarMensaje" class="flex items-center gap-2">
             <input 
@@ -299,7 +283,6 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Floating Toggle Button -->
     <button 
       @click="alternarWidget"
       class="w-14 h-14 bg-gray-900 text-white rounded-full shadow-xl flex items-center justify-center text-2xl hover:bg-gray-800 hover:scale-105 transition-all focus:outline-none focus:ring-4 focus:ring-gray-300 relative"

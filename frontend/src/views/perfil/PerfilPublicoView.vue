@@ -8,12 +8,7 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import { NIVELES_OPCIONES, MAPA_DEPORTES } from '@/utils/constants'
 
 import { useAuthStore } from '@/stores/auth'
-
-const obtenerIniciales = (name, surname) => {
-  const n = name ? name.charAt(0).toUpperCase() : 'U'
-  const a = surname ? surname.trim().split(/\s+/)[0].charAt(0).toUpperCase() : ''
-  return (n + a) || 'U'
-}
+import { obtenerIniciales, formatearFecha } from '@/utils/formatters'
 
 const route = useRoute()
 const userId = route.params.id
@@ -131,9 +126,7 @@ const getEstrellasVacias = (resena) => {
 
 const inicialesUsuario = computed(() => {
   if (!usuario.value) return ''
-  const n = usuario.value.nombre ? usuario.value.nombre.charAt(0).toUpperCase() : ''
-  const a = usuario.value.apellidos ? usuario.value.apellidos.trim().split(/\s+/)[0].charAt(0).toUpperCase() : ''
-  return (n + a) || 'U'
+  return obtenerIniciales(usuario.value.nombre, usuario.value.apellidos)
 })
 
 const getLabelNivel = (nivelValue) => {
@@ -143,9 +136,7 @@ const getLabelNivel = (nivelValue) => {
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }).format(date)
+  return formatearFecha(dateString)
 }
 </script>
 
