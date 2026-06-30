@@ -37,6 +37,9 @@ public class ReservaService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private NotificacionService notificacionService;
+
 
 
     private ReservaDTO mapToDTO(Reserva reserva) {
@@ -142,6 +145,11 @@ public class ReservaService {
         }
 
         Reserva guardada = reservaRepository.save(reserva);
+
+        if (Boolean.TRUE.equals(dto.getEsAbierta())) {
+            notificacionService.notificarNuevaPartida(guardada);
+        }
+
         return mapToDTO(guardada);
     }
 

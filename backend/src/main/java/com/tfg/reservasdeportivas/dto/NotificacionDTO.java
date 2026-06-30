@@ -1,8 +1,8 @@
 package com.tfg.reservasdeportivas.dto;
 
+import java.util.Objects;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class NotificacionDTO implements Serializable {
 
@@ -11,6 +11,8 @@ public class NotificacionDTO implements Serializable {
     private String titulo;
     private String mensaje;
     private Boolean leido;
+    private String tipo;
+    private Integer referenciaId;
     private LocalDateTime fechaCreacion;
 
     public NotificacionDTO() {
@@ -45,5 +47,18 @@ public class NotificacionDTO implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public Integer getReferenciaId() {
+        return referenciaId;
+    }
+
+    public void setReferenciaId(Integer referenciaId) {
+        this.referenciaId = referenciaId;
     }
 }

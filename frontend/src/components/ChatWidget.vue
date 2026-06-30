@@ -16,10 +16,35 @@ const partidaSeleccionada = ref(null)
 const mensajes = ref([])
 const nuevoMensaje = ref('')
 const contenedorMensajes = ref(null)
-const mensajesNoLeidos = ref({})
 
 let stompClient = null
 let currentSubscription = null
+
+const handleAbrirChat = async (e) => {
+  const { reservaId } = e.detail
+  estaAbierto.value = true
+  if (partidasActivas.value.length === 0) {
+    await cargarPartidas()
+  }
+  const match = partidasActivas.value.find(p => p.id === reservaId)
+  if (match) {
+    seleccionarPartida(match)
+  }
+}
+
+onMounted(() => {
+  if (authStore.isLogged()) {
+    cargarPartidas()
+  }
+  window.addEventListener('abrir-chat', handleAbrirChat)
+})
+
+onUnmounted(() => {
+  if (stompClient) {
+    stompClient.deactivate()
+  }
+  window.removeEventListener('abrir-chat', handleAbrirChat)
+})
 
 const alternarWidget = () => {
   estaAbierto.value = !estaAbierto.value
@@ -49,7 +74,6 @@ const cargarPartidas = async () => {
 
 const seleccionarPartida = async (match) => {
   partidaSeleccionada.value = match
-  mensajesNoLeidos.value[match.id] = 0
   await cargarMensajes(match.id)
   conectarWebSocket(match.id)
 }
@@ -103,10 +127,6 @@ const suscribirseAPartida = (matchId) => {
     const parsedMessage = JSON.parse(message.body)
     mensajes.value.push(parsedMessage)
     desplazarAbajo()
-    
-    if (!estaAbierto.value || partidaSeleccionada.value?.id !== matchId) {
-      mensajesNoLeidos.value[matchId] = (mensajesNoLeidos.value[matchId] || 0) + 1
-    }
   })
 }
 
@@ -137,10 +157,6 @@ const desplazarAbajo = async () => {
 const formatearFechaLocal = (dateString) => {
   return formatearFecha(dateString, { hour: '2-digit', minute: '2-digit' })
 }
-
-const totalNoLeidos = computed(() => {
-  return Object.values(mensajesNoLeidos.value).reduce((a, b) => a + b, 0)
-})
 
 const manejarReservaActualizada = async () => {
   if (authStore.isLogged()) {
@@ -213,10 +229,6 @@ onUnmounted(() => {
               <h4 class="font-bold text-gray-800 truncate text-lg">{{ match.nombrePista }}</h4>
               <p class="text-sm text-gray-500 truncate">- {{ match.fecha }} a las {{ formatearHora(match.horaInicio) }}</p>
             </div>
-            
-            <div v-if="mensajesNoLeidos[match.id]" class="bg-red-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shrink-0 shadow-sm">
-              {{ mensajesNoLeidos[match.id] }}
-            </div>
           </div>
         </div>
       </div>
@@ -288,12 +300,6 @@ onUnmounted(() => {
       class="w-14 h-14 bg-gray-900 text-white rounded-full shadow-xl flex items-center justify-center text-2xl hover:bg-gray-800 hover:scale-105 transition-all focus:outline-none focus:ring-4 focus:ring-gray-300 relative"
     >
       <i :class="estaAbierto ? 'fas fa-times' : 'fas fa-comment-dots'"></i>
-      <span 
-        v-if="!estaAbierto && totalNoLeidos > 0" 
-        class="absolute -top-1 -right-1 bg-red-500 border-2 border-white text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full"
-      >
-        {{ totalNoLeidos }}
-      </span>
     </button>
   </div>
 </template>
