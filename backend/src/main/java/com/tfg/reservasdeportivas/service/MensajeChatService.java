@@ -28,6 +28,9 @@ public class MensajeChatService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private NotificacionService notificacionService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     public List<MensajeChatDTO> obtenerMensajesPorReserva(Integer reservaId, Integer usuarioId) {
@@ -67,6 +70,9 @@ public class MensajeChatService {
         mensaje.setMensaje(dto.getMensaje());
 
         MensajeChat guardado = mensajeChatRepository.save(mensaje);
+        
+        notificacionService.enviarNotificacionChat(reserva, usuario, dto.getMensaje());
+
         return modelMapper.map(guardado, MensajeChatDTO.class);
     }
 

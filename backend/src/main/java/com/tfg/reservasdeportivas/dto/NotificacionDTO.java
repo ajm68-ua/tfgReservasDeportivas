@@ -1,5 +1,6 @@
 package com.tfg.reservasdeportivas.dto;
 
+import java.util.Objects;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
