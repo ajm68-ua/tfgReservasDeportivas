@@ -101,6 +101,8 @@ erDiagram
         varchar titulo
         text mensaje
         boolean leido
+        varchar tipo
+        int referencia_id
         datetime fecha_creacion
     }
 

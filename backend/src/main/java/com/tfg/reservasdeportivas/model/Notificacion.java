@@ -22,6 +22,11 @@ public class Notificacion {
 
     private Boolean leido;
 
+    private String tipo;
+
+    @Column(name = "referencia_id")
+    private Integer referenciaId;
+
     @Column(name = "fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;
 
@@ -79,5 +84,21 @@ public class Notificacion {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public Integer getReferenciaId() {
+        return referenciaId;
+    }
+
+    public void setReferenciaId(Integer referenciaId) {
+        this.referenciaId = referenciaId;
     }
 }
