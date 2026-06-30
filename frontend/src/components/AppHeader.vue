@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { obtenerIniciales, formatearDinero } from '@/utils/formatters'
 import logoLfg from '@/assets/images/Logo LFGHub.png'
 
 const authStore = useAuthStore()
@@ -15,11 +16,9 @@ function cerrarSesion() {
   router.push('/login')
 }
 
-const userInitials = computed(() => {
+const inicialesUsuario = computed(() => {
   if (!authStore.usuario) return ''
-  const n = authStore.usuario.nombre ? authStore.usuario.nombre.charAt(0).toUpperCase() : ''
-  const a = authStore.usuario.apellidos ? authStore.usuario.apellidos.charAt(0).toUpperCase() : ''
-  return n + a
+  return obtenerIniciales(authStore.usuario.nombre, authStore.usuario.apellidos)
 })
 </script>
 
@@ -60,13 +59,13 @@ const userInitials = computed(() => {
           
           <button @click="menuAbierto = !menuAbierto" class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold overflow-hidden">
             <img v-if="authStore.usuario.foto" :src="authStore.usuario.foto" alt="Perfil" class="w-full h-full object-cover" />
-            <span v-else>{{ userInitials }}</span>
+            <span v-else>{{ inicialesUsuario }}</span>
           </button>
 
           <div v-if="menuAbierto" class="absolute right-0 top-12 mt-2 w-56 bg-white rounded-xl shadow-lg py-2 border border-gray-100 animate-fade-in-down">
             <div class="px-4 py-3 border-b border-gray-100 mb-2 bg-gray-50/50">
               <p class="text-xs text-gray-500 font-medium uppercase tracking-wider mb-0.5">Saldo disponible</p>
-              <p class="text-lg font-bold text-gray-900">{{ authStore.usuario?.saldo?.toFixed(2) || '0.00' }}€</p>
+              <p class="text-lg font-bold text-gray-900">{{ formatearDinero(authStore.usuario?.saldo) }}</p>
             </div>
             
             <RouterLink 

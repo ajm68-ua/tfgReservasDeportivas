@@ -53,6 +53,9 @@ public class Reserva {
     )
     private java.util.List<Usuario> participantes = new java.util.ArrayList<>();
 
+    @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<MensajeChat> mensajesChat = new java.util.ArrayList<>();
+
     @Column(name = "fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;
 

@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { obtenerIniciales, formatearFecha, formatearHora, formatearDinero } from '@/utils/formatters'
 
 const props = defineProps({
   partida: {
@@ -17,16 +18,6 @@ const authStore = useAuthStore()
 
 const emit = defineEmits(['unirse', 'abandonar'])
 
-function formatearFecha(fechaStr) {
-  if (!fechaStr) return ''
-  const [year, month, day] = fechaStr.split('-')
-  return `${day}/${month}/${year}`
-}
-
-function formatearHora(horaStr) {
-  if (!horaStr) return ''
-  return horaStr.substring(0, 5)
-}
 
 const isJoined = computed(() => {
   if (!authStore.usuario || !props.partida.participantesIds) return false
@@ -112,7 +103,7 @@ const barraColor = computed(() => {
             <template v-for="jugador in partida.jugadoresDetalle" :key="jugador.id">
               <router-link :to="'/usuario/' + jugador.id" class="relative hover:-translate-y-1 hover:z-10 hover:scale-110 transition-transform duration-200">
                 <img v-if="jugador.foto" :src="jugador.foto" class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" :title="jugador.nombre" />
-                <div v-else class="w-8 h-8 rounded-full border-2 border-white shadow-sm bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold" :title="jugador.nombre">{{ jugador.nombre.charAt(0) }}</div>
+                <div v-else class="w-8 h-8 rounded-full border-2 border-white shadow-sm bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold" :title="jugador.nombre + ' ' + (jugador.apellidos || '')">{{ obtenerIniciales(jugador.nombre, jugador.apellidos) }}</div>
               </router-link>
             </template>
           </div>
@@ -125,7 +116,7 @@ const barraColor = computed(() => {
 
     <div class="p-6 bg-gray-50 sm:w-56 flex flex-col items-center justify-center border-t sm:border-t-0 sm:border-l border-gray-100 text-center">
       <div class="mb-4">
-        <span class="text-3xl font-extrabold text-gray-900">{{ (partida.precioTotal / partida.capacidadMaxima).toFixed(2) }}€</span>
+        <span class="text-3xl font-extrabold text-gray-900">{{ formatearDinero(partida.precioTotal / partida.capacidadMaxima) }}</span>
         <span class="block text-[10px] text-gray-500 uppercase font-bold tracking-widest mt-0.5">/ persona</span>
       </div>
       

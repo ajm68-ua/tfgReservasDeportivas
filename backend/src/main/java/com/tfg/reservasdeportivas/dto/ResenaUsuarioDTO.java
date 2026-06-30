@@ -12,8 +12,10 @@ public class ResenaUsuarioDTO implements Serializable {
     private Integer reservaId;
     private Integer evaluadorId;
     private String nombreEvaluador;
+    private String apellidosEvaluador;
     private Integer evaluadoId;
     private String nombreEvaluado;
+    private String apellidosEvaluado;
     @Min(0)
     @Max(5)
     private Integer puntuacion;
@@ -35,11 +37,17 @@ public class ResenaUsuarioDTO implements Serializable {
     public String getNombreEvaluador() { return nombreEvaluador; }
     public void setNombreEvaluador(String nombreEvaluador) { this.nombreEvaluador = nombreEvaluador; }
 
+    public String getApellidosEvaluador() { return apellidosEvaluador; }
+    public void setApellidosEvaluador(String apellidosEvaluador) { this.apellidosEvaluador = apellidosEvaluador; }
+
     public Integer getEvaluadoId() { return evaluadoId; }
     public void setEvaluadoId(Integer evaluadoId) { this.evaluadoId = evaluadoId; }
 
     public String getNombreEvaluado() { return nombreEvaluado; }
     public void setNombreEvaluado(String nombreEvaluado) { this.nombreEvaluado = nombreEvaluado; }
+
+    public String getApellidosEvaluado() { return apellidosEvaluado; }
+    public void setApellidosEvaluado(String apellidosEvaluado) { this.apellidosEvaluado = apellidosEvaluado; }
 
     public Integer getPuntuacion() { return puntuacion; }
     public void setPuntuacion(Integer puntuacion) { this.puntuacion = puntuacion; }

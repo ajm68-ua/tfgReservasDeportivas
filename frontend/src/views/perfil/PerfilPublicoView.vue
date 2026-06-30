@@ -8,6 +8,7 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import { NIVELES_OPCIONES, MAPA_DEPORTES } from '@/utils/constants'
 
 import { useAuthStore } from '@/stores/auth'
+import { obtenerIniciales, formatearFecha } from '@/utils/formatters'
 
 const route = useRoute()
 const userId = route.params.id
@@ -123,11 +124,9 @@ const getEstrellasVacias = (resena) => {
   return 5 - getPuntuacion(resena)
 }
 
-const userInitials = computed(() => {
+const inicialesUsuario = computed(() => {
   if (!usuario.value) return ''
-  const n = usuario.value.nombre ? usuario.value.nombre.charAt(0).toUpperCase() : ''
-  const a = usuario.value.apellidos ? usuario.value.apellidos.charAt(0).toUpperCase() : ''
-  return n + a
+  return obtenerIniciales(usuario.value.nombre, usuario.value.apellidos)
 })
 
 const getLabelNivel = (nivelValue) => {
@@ -137,9 +136,7 @@ const getLabelNivel = (nivelValue) => {
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'long', year: 'numeric' }).format(date)
+  return formatearFecha(dateString)
 }
 </script>
 
@@ -163,7 +160,7 @@ const formatDate = (dateString) => {
           <div class="relative mb-4 group">
             <div class="w-32 h-32 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl font-bold border-4 border-white shadow-md overflow-hidden relative">
               <img v-if="usuario.foto" :src="usuario.foto" alt="Foto perfil" class="w-full h-full object-cover" />
-              <span v-else>{{ userInitials }}</span>
+              <span v-else>{{ inicialesUsuario }}</span>
             </div>
           </div>
           
@@ -250,10 +247,10 @@ const formatDate = (dateString) => {
               
               <div class="flex items-center gap-3 mb-2">
                 <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                  {{ resena.nombreEvaluador ? resena.nombreEvaluador.charAt(0).toUpperCase() : 'U' }}
+                  {{ obtenerIniciales(resena.nombreEvaluador, resena.apellidosEvaluador) }}
                 </div>
                 <div>
-                  <p class="font-bold text-gray-900 text-sm">{{ resena.nombreEvaluador }}</p>
+                  <p class="font-bold text-gray-900 text-sm">{{ resena.nombreEvaluador }} {{ resena.apellidosEvaluador || '' }}</p>
                   <p class="text-xs text-gray-500">{{ formatDate(resena.fechaCreacion) }}</p>
                 </div>
               </div>

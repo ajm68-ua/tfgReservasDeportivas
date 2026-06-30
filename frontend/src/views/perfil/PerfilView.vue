@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { MAPA_DEPORTES, NIVELES_OPCIONES, DEPORTES_ENUM } from '@/utils/constants'
 import api from '@/services/api'
+import { obtenerIniciales } from '@/utils/formatters'
 
 const authStore = useAuthStore()
 
@@ -36,10 +37,8 @@ const formPassword = reactive({
 
 const niveles = NIVELES_OPCIONES
 
-const userInitials = computed(() => {
-  const n = formPerfil.nombre ? formPerfil.nombre.charAt(0).toUpperCase() : ''
-  const a = formPerfil.apellidos ? formPerfil.apellidos.charAt(0).toUpperCase() : ''
-  return n + a
+const inicialesUsuario = computed(() => {
+  return obtenerIniciales(formPerfil.nombre, formPerfil.apellidos)
 })
 
 const isFormChanged = computed(() => {
@@ -191,7 +190,7 @@ async function cambiarPassword() {
           <div class="relative mb-4 group cursor-pointer">
             <div class="w-32 h-32 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl font-bold border-4 border-white shadow-md overflow-hidden relative">
               <img v-if="authStore.usuario?.foto" :src="authStore.usuario.foto" alt="Foto perfil" class="w-full h-full object-cover" />
-              <span v-else>{{ userInitials }}</span>
+              <span v-else>{{ inicialesUsuario }}</span>
             </div>
           </div>
           
