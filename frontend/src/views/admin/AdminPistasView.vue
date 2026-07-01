@@ -1,9 +1,11 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import { toast } from 'vue3-toastify'
+import SockJS from 'sockjs-client'
+import { Client } from '@stomp/stompjs'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import AdminPistaCard from '@/components/AdminPistaCard.vue'
@@ -14,6 +16,9 @@ const authStore = useAuthStore()
 
 const cargando = ref(true)
 const pistas = ref([])
+const centro = ref(null)
+const reservasHoy = ref([])
+let stompClient = null
 
 const mostrarModal = ref(false)
 const modoEdicion = ref(false)
@@ -35,8 +40,51 @@ onMounted(async () => {
     router.push('/')
     return
   }
-  await cargarPistas()
+  try {
+    await Promise.all([cargarCentro(), cargarPistas(), cargarReservasHoy()])
+    conectarWebSocket()
+  } finally {
+    cargando.value = false
+  }
 })
+
+onUnmounted(() => {
+  if (stompClient) stompClient.deactivate()
+})
+
+async function cargarCentro() {
+  try {
+    const res = await api.get(`/centros/${authStore.usuario.centroId}`)
+    centro.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function cargarReservasHoy() {
+  try {
+    const res = await api.get(`/reservas/centro/${authStore.usuario.centroId}`)
+    reservasHoy.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+function conectarWebSocket() {
+  const socket = new SockJS('http://localhost:8080/ws-reservas')
+  stompClient = new Client({
+    webSocketFactory: () => socket,
+    reconnectDelay: 5000,
+    onConnect: () => {
+      stompClient.subscribe(`/topic/centro/${authStore.usuario.centroId}/reservas`, (msg) => {
+        if (msg.body === 'REFRESH') {
+          cargarReservasHoy()
+        }
+      })
+    }
+  })
+  stompClient.activate()
+}
 
 async function cargarPistas() {
   try {
@@ -44,8 +92,6 @@ async function cargarPistas() {
     pistas.value = res.data
   } catch (err) {
     toast.error('Error al cargar las pistas del centro.')
-  } finally {
-    cargando.value = false
   }
 }
 
@@ -169,6 +215,8 @@ async function toggleDisponibilidad(pista) {
             v-for="pista in pistas"
             :key="pista.id"
             :pista="pista"
+            :centro="centro"
+            :reservasHoy="reservasHoy.filter(r => r.pistaId === pista.id)"
             @toggle-disponibilidad="toggleDisponibilidad"
             @editar="abrirModalEditar"
             @eliminar="eliminarPista"

@@ -224,6 +224,10 @@ async function cambiarPassword() {
           <button v-if="authStore.usuario?.foto" @click="eliminarFoto" class="w-full bg-white border border-red-500 text-red-500 font-semibold py-2 rounded-lg hover:bg-red-50 transition text-sm mt-3">
             Eliminar Foto
           </button>
+
+          <button @click="$router.push('/usuario/' + authStore.usuario.id)" class="w-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold py-2 rounded-lg hover:bg-blue-100 transition text-sm mt-3 flex items-center justify-center gap-2">
+            <i class="fas fa-external-link-alt"></i> Ver perfil público
+          </button>
         </div>
       </div>
 

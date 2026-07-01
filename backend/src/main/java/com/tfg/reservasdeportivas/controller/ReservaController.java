@@ -24,6 +24,16 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.obtenerReservasPorPistaYFecha(pistaId, fecha));
     }
 
+    @GetMapping("/centro/{centroId}")
+    public ResponseEntity<List<ReservaDTO>> obtenerReservasPorCentroYFecha(
+            @PathVariable Integer centroId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        if (fecha == null) {
+            fecha = LocalDate.now();
+        }
+        return ResponseEntity.ok(reservaService.obtenerReservasPorCentroYFecha(centroId, fecha));
+    }
+
     @GetMapping("/abiertas")
     public ResponseEntity<List<ReservaDTO>> obtenerPartidasAbiertas() {
         return ResponseEntity.ok(reservaService.obtenerPartidasAbiertas());

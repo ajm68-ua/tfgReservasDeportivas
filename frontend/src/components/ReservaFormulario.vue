@@ -11,6 +11,7 @@ const props = defineProps({
   reservaIgnoradaId: { type: Number, default: null },
   guardando: { type: Boolean, default: false },
   modo: { type: String, default: 'CREATE' },
+  modoAdmin: { type: Boolean, default: false },
   initialData: {
     type: Object,
     default: () => ({})
@@ -77,15 +78,19 @@ function generarBloques() {
       return startStr < r.horaFin && endStr > r.horaInicio
     })
 
-    const esHoy = fecha.value === getFechaLocal()
+    const hoyStr = getFechaLocal()
+    const esHoy = fecha.value === hoyStr
+    const esPasado = fecha.value < hoyStr
     const horaActualTime = new Date().getHours()
-    const yaPaso = esHoy && i <= horaActualTime
+    const yaPaso = esPasado || (esHoy && i <= horaActualTime)
 
     bloques.push({
       start: startStr,
       end: endStr,
       label: `${i.toString().padStart(2, '0')}:00 - ${(i + 1).toString().padStart(2, '0')}:00`,
-      ocupado: ocupado || yaPaso
+      ocupado: ocupado || yaPaso,
+      reservado: ocupado,
+      pasado: yaPaso
     })
   }
   bloquesHorarios.value = bloques
@@ -100,7 +105,7 @@ function verificarContinuidad(array) {
 }
 
 function seleccionarBloque(bloque) {
-  if (bloque.ocupado) return
+  if (bloque.ocupado || props.modoAdmin) return;
 
   const idx = bloquesSeleccionados.value.findIndex(b => b.start === bloque.start)
   if (idx >= 0) {
@@ -142,7 +147,7 @@ function submitForm() {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+  <div v-if="!modoAdmin" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
     <div>
       <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold uppercase tracking-wider mb-2 inline-block">
         {{ MAPA_DEPORTES[pista.deporte] || pista.deporte }}
@@ -158,11 +163,11 @@ function submitForm() {
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <div class="lg:col-span-2 space-y-8">
+    <div :class="modoAdmin ? 'lg:col-span-3 space-y-8' : 'lg:col-span-2 space-y-8'">
       
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-          1. Selecciona el Día
+          {{ modoAdmin ? 'Día de Ocupación' : '1. Selecciona el Día' }}
         </h3>
         <input 
           v-model="fecha" 
@@ -174,7 +179,7 @@ function submitForm() {
 
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-          2. Elige la Hora
+          {{ modoAdmin ? 'Horarios' : '2. Elige la Hora' }}
         </h3>
         
         <div v-if="bloquesHorarios.length > 0" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -185,16 +190,21 @@ function submitForm() {
             :disabled="bloque.ocupado"
             class="py-3 px-2 rounded-xl text-sm font-semibold border-2 transition-all duration-200 text-center flex flex-col items-center justify-center gap-1"
             :class="[
-              bloque.ocupado 
-                ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed opacity-60' 
-                : bloquesSeleccionados.some(b => b.start === bloque.start)
-                  ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm'
-                  : 'bg-white border-green-200 text-gray-700 hover:border-green-400 hover:shadow-sm cursor-pointer'
+              bloque.reservado && modoAdmin 
+                ? 'bg-red-50 border-red-200 text-red-700 cursor-default' 
+                : bloque.ocupado 
+                  ? 'bg-gray-100 border-gray-100 text-gray-400 cursor-not-allowed opacity-60' 
+                  : bloquesSeleccionados.some(b => b.start === bloque.start)
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm cursor-pointer'
+                    : modoAdmin 
+                      ? 'bg-green-50 border-green-200 text-green-700 cursor-default'
+                      : 'bg-white border-green-200 text-gray-700 hover:border-green-400 hover:shadow-sm cursor-pointer'
             ]"
           >
             <span>{{ bloque.label }}</span>
-            <span v-if="bloque.ocupado" class="text-[10px] uppercase tracking-wider font-bold opacity-70">Ocupado</span>
-            <span v-else class="text-[10px] uppercase tracking-wider font-bold text-green-600" :class="{'text-blue-600': bloquesSeleccionados.some(b => b.start === bloque.start)}">Disponible</span>
+            <span v-if="bloque.reservado && modoAdmin" class="text-[10px] uppercase tracking-wider font-bold">Reservado</span>
+            <span v-else-if="bloque.ocupado" class="text-[10px] uppercase tracking-wider font-bold opacity-70">Ocupado</span>
+            <span v-else class="text-[10px] uppercase tracking-wider font-bold" :class="{'text-blue-600': bloquesSeleccionados.some(b => b.start === bloque.start), 'text-green-600': !modoAdmin}">Disponible</span>
           </button>
         </div>
         <div v-else class="text-center py-6 text-gray-500">
@@ -204,7 +214,7 @@ function submitForm() {
 
     </div>
 
-    <div class="space-y-8">
+    <div v-if="!modoAdmin" class="space-y-8">
       
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
         <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">

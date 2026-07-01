@@ -1,15 +1,48 @@
 <script setup>
+import { ref, watch } from 'vue'
 import { MAPA_DEPORTES } from '@/utils/constants'
 import { formatearDinero } from '@/utils/formatters'
+import api from '@/services/api'
+import ReservaFormulario from '@/components/ReservaFormulario.vue'
 
-defineProps({
+const props = defineProps({
   pista: {
     type: Object,
     required: true
+  },
+  centro: {
+    type: Object,
+    required: true
+  },
+  reservasHoy: {
+    type: Array,
+    default: () => []
   }
 })
 
 const emit = defineEmits(['toggle-disponibilidad', 'editar', 'eliminar'])
+
+const mostrarCalendario = ref(false)
+const reservasPista = ref([...props.reservasHoy])
+
+let fechaSeleccionada = new Date().toISOString().split('T')[0]
+
+watch(() => props.reservasHoy, (newVal) => {
+  const hoy = new Date().toISOString().split('T')[0]
+  if (fechaSeleccionada === hoy) {
+    reservasPista.value = [...newVal]
+  }
+}, { deep: true })
+
+async function cargarReservasPorFecha(nuevaFecha) {
+  fechaSeleccionada = nuevaFecha
+  try {
+    const res = await api.get(`/reservas/pista/${props.pista.id}?fecha=${nuevaFecha}`)
+    reservasPista.value = res.data
+  } catch (err) {
+    console.error('Error al cargar reservas de la pista:', err)
+  }
+}
 </script>
 
 <template>
@@ -43,6 +76,16 @@ const emit = defineEmits(['toggle-disponibilidad', 'editar', 'eliminar'])
         </p>
       </div>
 
+      <div class="mb-4">
+        <button 
+          @click="mostrarCalendario = true"
+          class="w-full py-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-sm font-semibold hover:bg-blue-100 transition flex items-center justify-center gap-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Ver Ocupación
+        </button>
+      </div>
+
       <div class="pt-4 border-t border-gray-100 flex flex-col gap-2.5">
         <button 
           @click="emit('toggle-disponibilidad', pista)"
@@ -65,6 +108,30 @@ const emit = defineEmits(['toggle-disponibilidad', 'editar', 'eliminar'])
             Eliminar
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="mostrarCalendario" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm" @click="mostrarCalendario = false"></div>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] z-10 flex flex-col animate-fade-in-down overflow-hidden">
+      <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Ocupación: {{ pista.nombre }}
+        </h3>
+        <button @click="mostrarCalendario = false" class="text-gray-400 hover:text-gray-600 transition bg-white rounded-full p-1 shadow-sm border border-gray-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-1">
+        <ReservaFormulario 
+          :pista="pista" 
+          :centro="centro" 
+          :reservasDelDia="reservasPista" 
+          @fecha-changed="cargarReservasPorFecha"
+          modoAdmin 
+        />
       </div>
     </div>
   </div>

@@ -12,6 +12,7 @@ import com.tfg.reservasdeportivas.repository.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
@@ -40,7 +41,14 @@ public class ReservaService {
     @Autowired
     private NotificacionService notificacionService;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
+    private void notificarActualizacionCentro(Integer centroId) {
+        if (messagingTemplate != null && centroId != null) {
+            messagingTemplate.convertAndSend("/topic/centro/" + centroId + "/reservas", "REFRESH");
+        }
+    }
 
     private ReservaDTO mapToDTO(Reserva reserva) {
         ReservaDTO dto = modelMapper.map(reserva, ReservaDTO.class);
@@ -66,6 +74,12 @@ public class ReservaService {
 
     public List<ReservaDTO> obtenerReservasPorPistaYFecha(Integer pistaId, LocalDate fecha) {
         return reservaRepository.findByPistaIdAndFecha(pistaId, fecha).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ReservaDTO> obtenerReservasPorCentroYFecha(Integer centroId, LocalDate fecha) {
+        return reservaRepository.findByPistaCentroIdAndFechaOrderByHoraInicioAsc(centroId, fecha).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -149,6 +163,8 @@ public class ReservaService {
         if (Boolean.TRUE.equals(dto.getEsAbierta())) {
             notificacionService.notificarNuevaPartida(guardada);
         }
+        
+        notificarActualizacionCentro(guardada.getPista().getCentro().getId());
 
         return mapToDTO(guardada);
     }
@@ -198,6 +214,7 @@ public class ReservaService {
         reserva.getParticipantes().clear();
         reserva.setEstadoPago(EstadoPago.CANCELADO);
         reservaRepository.save(reserva);
+        notificarActualizacionCentro(reserva.getPista().getCentro().getId());
     }
 
     public void reactivarReserva(Integer id) {
@@ -212,6 +229,7 @@ public class ReservaService {
 
         reserva.setEstadoPago(EstadoPago.PENDIENTE);
         reservaRepository.save(reserva);
+        notificarActualizacionCentro(reserva.getPista().getCentro().getId());
     }
 
     public void eliminarReserva(Integer id) {
@@ -225,7 +243,9 @@ public class ReservaService {
             throw new IllegalArgumentException("Solo se pueden eliminar reservas que están canceladas o que ya han pasado");
         }
         
+        Integer centroId = reserva.getPista().getCentro().getId();
         reservaRepository.delete(reserva);
+        notificarActualizacionCentro(centroId);
     }
 
     public void pagarReserva(Integer id) {
@@ -316,6 +336,8 @@ public class ReservaService {
             String mensaje = usuario.getNombre() + " se ha unido a tu partida de " + deporteStr + " para el " + reserva.getFecha();
             notificacionService.crearYEnviarNotificacion(reserva.getOrganizador(), titulo, mensaje, "NUEVO_JUGADOR", reserva.getId());
         }
+
+        notificarActualizacionCentro(reserva.getPista().getCentro().getId());
     }
 
     public void abandonarPartidaAbierta(Integer reservaId, Integer usuarioId) {
@@ -370,6 +392,7 @@ public class ReservaService {
         }
 
         reservaRepository.save(reserva);
+        notificarActualizacionCentro(reserva.getPista().getCentro().getId());
     }
 
     public ReservaDTO modificarReserva(Integer id, ReservaDTO dto) {
@@ -396,6 +419,7 @@ public class ReservaService {
         reservaExistente.setPrecioTotal(calcularPrecioTotal(dto.getHoraInicio(), dto.getHoraFin(), pista.getPrecioPorHora()));
 
         Reserva guardada = reservaRepository.save(reservaExistente);
+        notificarActualizacionCentro(guardada.getPista().getCentro().getId());
         return mapToDTO(guardada);
     }
 }
