@@ -2,10 +2,14 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
+import { useAuthStore } from '@/stores/auth'
 import CentroDeportivoCard from '@/components/CentroDeportivoCard.vue'
+import PartidaAbiertaCard from '@/components/PartidaAbiertaCard.vue'
 import { DEPORTES_ARRAY } from '@/utils/constants'
+import { toast } from 'vue3-toastify'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const deportes = DEPORTES_ARRAY
 const deporteSeleccionado = ref('')
 const ciudadSeleccionada = ref('')
@@ -14,12 +18,22 @@ const centros = ref([])
 const cargando = ref(true)
 const error = ref(null)
 
+const partidasAbiertas = ref([])
+const cargandoPartidas = ref(true)
+
 const paginaActual = ref(0)
 const centrosPorPagina = 3
 
+const ciudadUsuario = computed(() => authStore.usuario?.ciudad || '')
+
+const centrosFiltrados = computed(() => {
+  if (!ciudadUsuario.value) return centros.value
+  return centros.value.filter(c => c.ciudad === ciudadUsuario.value)
+})
+
 const centrosMostrados = computed(() => {
   const inicio = paginaActual.value * centrosPorPagina
-  return centros.value.slice(inicio, inicio + centrosPorPagina)
+  return centrosFiltrados.value.slice(inicio, inicio + centrosPorPagina)
 })
 
 const ciudadesUnicas = computed(() => {
@@ -27,17 +41,38 @@ const ciudadesUnicas = computed(() => {
   return [...new Set(ciudades)].sort()
 })
 
-const hayVariasPaginas = computed(() => centros.value.length > centrosPorPagina)
+const hayVariasPaginas = computed(() => centrosFiltrados.value.length > centrosPorPagina)
+
+const tituloCentros = computed(() => {
+  if (ciudadUsuario.value) {
+    return `Centros deportivos en ${ciudadUsuario.value}`
+  }
+  return 'Centros deportivos destacados'
+})
+
+const partidasDestacadas = computed(() => {
+  return partidasAbiertas.value
+    .filter(p => {
+      const ocupadas = p.participantesIds ? p.participantesIds.length : 0
+      return ocupadas < p.capacidadMaxima
+    })
+    .sort((a, b) => {
+      const fechaA = new Date(a.fecha + 'T' + a.horaInicio)
+      const fechaB = new Date(b.fecha + 'T' + b.horaInicio)
+      return fechaA - fechaB
+    })
+    .slice(0, 3)
+})
 
 function paginaAnterior() {
   if (paginaActual.value > 0) {
     paginaActual.value--
   } else {
-    paginaActual.value = Math.max(0, Math.ceil(centros.value.length / centrosPorPagina) - 1)
+    paginaActual.value = Math.max(0, Math.ceil(centrosFiltrados.value.length / centrosPorPagina) - 1)
   }
 }
 function paginaSiguiente() {
-  const maxPagina = Math.max(0, Math.ceil(centros.value.length / centrosPorPagina) - 1)
+  const maxPagina = Math.max(0, Math.ceil(centrosFiltrados.value.length / centrosPorPagina) - 1)
   if (paginaActual.value < maxPagina) {
     paginaActual.value++
   } else {
@@ -55,15 +90,80 @@ function buscarPistas() {
   })
 }
 
+const joiningId = ref(null)
+
+async function cargarPartidas() {
+  try {
+    const res = await api.get('/reservas/abiertas')
+    partidasAbiertas.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function unirsePartida(partidaId) {
+  if (joiningId.value) return
+
+  const partida = partidasAbiertas.value.find(p => p.id === partidaId)
+  let confirmMessage = '¿Quieres unirte a esta partida? Se te cobrará la parte proporcional de la pista de tu saldo.'
+
+  if (partida && authStore.usuario && partida.nivel !== authStore.usuario.nivel) {
+    confirmMessage = '¿Estás seguro que quieres unirte? El nivel de juego solicitado no corresponde a tu nivel.\n\nSe te cobrará la parte proporcional de la pista de tu saldo.'
+  }
+
+  const confirmacion = confirm(confirmMessage)
+  if (!confirmacion) return
+
+  joiningId.value = partidaId
+  try {
+    await api.post(`/reservas/${partidaId}/unirse?usuarioId=${authStore.usuario.id}`)
+    await authStore.refreshUser(api)
+    toast.success('¡Te has unido a la partida con éxito!')
+    await cargarPartidas()
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
+  } catch (err) {
+    console.error(err)
+    toast.error(err.response?.data?.message || 'Error al unirse a la partida')
+  } finally {
+    joiningId.value = null
+  }
+}
+
+async function abandonarPartida(partidaId) {
+  if (joiningId.value) return
+
+  const confirmacion = confirm('¿Quieres abandonar esta partida? Se te devolverá la parte proporcional de la pista a tu saldo.')
+  if (!confirmacion) return
+
+  joiningId.value = partidaId
+  try {
+    await api.post(`/reservas/${partidaId}/abandonar?usuarioId=${authStore.usuario.id}`)
+    await authStore.refreshUser(api)
+    toast.success('Has abandonado la partida con éxito')
+    await cargarPartidas()
+    window.dispatchEvent(new CustomEvent('reserva-actualizada'))
+  } catch (err) {
+    console.error(err)
+    toast.error(err.response?.data?.message || 'Error al abandonar la partida')
+  } finally {
+    joiningId.value = null
+  }
+}
+
 onMounted(async () => {
   try {
-    const response = await api.get('/centros')
-    centros.value = response.data
+    const [resCentros, resPartidas] = await Promise.all([
+      api.get('/centros'),
+      api.get('/reservas/abiertas')
+    ])
+    centros.value = resCentros.data
+    partidasAbiertas.value = resPartidas.data
   } catch (err) {
-    error.value = 'No se pudieron cargar los centros deportivos.'
+    error.value = 'No se pudieron cargar los datos.'
     console.error(err)
   } finally {
     cargando.value = false
+    cargandoPartidas.value = false
   }
 })
 </script>
@@ -119,11 +219,11 @@ onMounted(async () => {
       </div>
     </section>
 
-    <section class="py-16 px-8 flex-grow bg-white relative">
+    <section class="py-16 px-8 bg-white">
       <div class="max-w-6xl mx-auto w-full">
         <div class="bg-gray-100 rounded-3xl py-10 px-12 md:px-20 relative">
           <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-8">
-            Descubre los centros deportivos de tu ciudad
+            {{ tituloCentros }}
           </h3>
 
           <div v-if="cargando" class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -139,6 +239,16 @@ onMounted(async () => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <p>{{ error }}</p>
+          </div>
+          <div v-else-if="centrosFiltrados.length === 0" class="text-center py-12 text-gray-500">
+            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <p class="font-semibold text-gray-700 mb-1">No hay centros en tu zona</p>
+            <p class="text-sm">Configura tu ciudad en tu perfil o explora todos los centros disponibles.</p>
+            <router-link to="/centros" class="inline-block mt-4 text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+              Ver todos los centros
+            </router-link>
           </div>
 
           <div v-else class="relative flex items-center">
@@ -166,6 +276,118 @@ onMounted(async () => {
               &gt;
             </button>
           </div>
+
+          <div v-if="centrosFiltrados.length > 0" class="text-center mt-8">
+            <router-link to="/centros" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+              Ver todos los centros →
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section v-if="!cargandoPartidas && partidasDestacadas.length > 0" class="py-16 px-8 bg-gray-50">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="flex items-end justify-between mb-8">
+          <div>
+            <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
+              Partidas que buscan jugadores
+            </h3>
+            <p class="text-gray-500 text-sm">
+              Hay hueco en estas partidas. Únete y completa el grupo.
+            </p>
+          </div>
+          <router-link to="/partidas" class="hidden md:block text-sm font-semibold text-blue-600 hover:text-blue-800 transition whitespace-nowrap">
+            Ver todas →
+          </router-link>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6">
+          <PartidaAbiertaCard
+            v-for="partida in partidasDestacadas"
+            :key="partida.id"
+            :partida="partida"
+            :isJoining="joiningId === partida.id"
+            @unirse="unirsePartida"
+            @abandonar="abandonarPartida"
+          />
+        </div>
+
+        <div class="text-center mt-6 md:hidden">
+          <router-link to="/partidas" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+            Ver todas las partidas →
+          </router-link>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 px-8 bg-white">
+      <div class="max-w-5xl mx-auto w-full">
+        <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900 text-center mb-4">
+          Reserva en tres pasos
+        </h3>
+        <p class="text-gray-500 text-center text-sm mb-14 max-w-lg mx-auto">
+          Sin complicaciones. Elige, reserva y juega.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h4 class="font-bold text-gray-900 mb-2">Busca tu pista</h4>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              Filtra por deporte, ciudad o centro deportivo y encuentra la pista que mejor se adapte a ti.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h4 class="font-bold text-gray-900 mb-2">Reserva al instante</h4>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              Elige el día y la hora que más te convenga. La reserva se confirma en el momento.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <h4 class="font-bold text-gray-900 mb-2">Juega con quien quieras</h4>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              Crea una partida privada con tus amigos o únete a una abierta y conoce gente nueva.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 px-8 bg-gray-900">
+      <div class="max-w-3xl mx-auto text-center">
+        <h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4">
+          ¿Listo para tu próxima partida?
+        </h3>
+        <p class="text-gray-400 text-base mb-8 max-w-md mx-auto leading-relaxed">
+          Explora las pistas disponibles en tu zona y empieza a jugar hoy mismo.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <router-link to="/pistas">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3.5 px-10 rounded-full transition">
+              Buscar pistas
+            </button>
+          </router-link>
+          <router-link to="/partidas">
+            <button class="bg-white/10 hover:bg-white/20 text-white font-semibold text-sm py-3.5 px-10 rounded-full transition border border-white/20">
+              Ver partidas abiertas
+            </button>
+          </router-link>
         </div>
       </div>
     </section>
