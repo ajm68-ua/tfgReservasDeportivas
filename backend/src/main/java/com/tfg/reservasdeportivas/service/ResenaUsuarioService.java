@@ -59,9 +59,6 @@ public class ResenaUsuarioService {
 
         ResenaUsuario guardada = resenaUsuarioRepository.save(resena);
 
-        List<ResenaUsuario> todas = resenaUsuarioRepository.findByEvaluadoIdOrderByFechaCreacionDesc(evaluado.getId());
-        usuarioService.recalcularValoracionMedia(evaluado.getId(), todas);
-
         return modelMapper.map(guardada, ResenaUsuarioDTO.class);
     }
 
@@ -75,9 +72,6 @@ public class ResenaUsuarioService {
 
         ResenaUsuario guardada = resenaUsuarioRepository.save(resena);
 
-        List<ResenaUsuario> todas = resenaUsuarioRepository.findByEvaluadoIdOrderByFechaCreacionDesc(resena.getEvaluado().getId());
-        usuarioService.recalcularValoracionMedia(resena.getEvaluado().getId(), todas);
-
         return modelMapper.map(guardada, ResenaUsuarioDTO.class);
     }
 
@@ -89,7 +83,6 @@ public class ResenaUsuarioService {
         Integer evaluadoId = resena.getEvaluado().getId();
         resenaUsuarioRepository.delete(resena);
 
-        List<ResenaUsuario> todas = resenaUsuarioRepository.findByEvaluadoIdOrderByFechaCreacionDesc(evaluadoId);
-        usuarioService.recalcularValoracionMedia(evaluadoId, todas);
+
     }
 }

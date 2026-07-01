@@ -309,6 +309,13 @@ public class ReservaService {
         }
 
         reservaRepository.save(reserva);
+
+        if (Boolean.TRUE.equals(reserva.getOrganizador().getNotificacionesPartidas())) {
+            String titulo = "Nuevo jugador en tu partida";
+            String deporteStr = reserva.getPista().getDeporte().toString().toLowerCase();
+            String mensaje = usuario.getNombre() + " se ha unido a tu partida de " + deporteStr + " para el " + reserva.getFecha();
+            notificacionService.crearYEnviarNotificacion(reserva.getOrganizador(), titulo, mensaje, "NUEVO_JUGADOR", reserva.getId());
+        }
     }
 
     public void abandonarPartidaAbierta(Integer reservaId, Integer usuarioId) {

@@ -168,15 +168,4 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    @Transactional
-    public void recalcularValoracionMedia(Integer usuarioId, List<ResenaUsuario> resenas) {
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow();
-        if (resenas.isEmpty()) {
-            usuario.setValoracionMedia(BigDecimal.ZERO);
-        } else {
-            double average = resenas.stream().mapToInt(ResenaUsuario::getPuntuacion).average().orElse(0.0);
-            usuario.setValoracionMedia(BigDecimal.valueOf(average));
-        }
-        usuarioRepository.save(usuario);
-    }
 }

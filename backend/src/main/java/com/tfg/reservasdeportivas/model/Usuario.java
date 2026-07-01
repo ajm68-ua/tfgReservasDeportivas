@@ -42,9 +42,6 @@ public class Usuario {
     @Column(name = "fecha_registro", updatable = false)
     private LocalDateTime fechaRegistro;
 
-    @Column(name = "valoracion_media", precision = 3, scale = 2)
-    private BigDecimal valoracionMedia;
-
     @Column(precision = 10, scale = 2)
     private BigDecimal saldo = BigDecimal.ZERO;
 
@@ -159,14 +156,6 @@ public class Usuario {
 
     public void setFechaRegistro(LocalDateTime fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
-    }
-
-    public BigDecimal getValoracionMedia() {
-        return valoracionMedia;
-    }
-
-    public void setValoracionMedia(BigDecimal valoracionMedia) {
-        this.valoracionMedia = valoracionMedia;
     }
 
     public BigDecimal getSaldo() {

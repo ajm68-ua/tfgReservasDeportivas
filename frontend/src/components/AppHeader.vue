@@ -20,7 +20,7 @@ const manejarClickNotificacion = (notif) => {
   
   if (notif.tipo === 'CHAT') {
     window.dispatchEvent(new CustomEvent('abrir-chat', { detail: { reservaId: notif.referenciaId } }))
-  } else if (notif.tipo === 'NUEVA_PARTIDA') {
+  } else if (notif.tipo === 'NUEVA_PARTIDA' || notif.tipo === 'NUEVO_JUGADOR') {
     router.push('/partidas')
   }
 }
