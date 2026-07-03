@@ -15,4 +15,4 @@ Thumbs.db
 *.log
 
 data/
-.env
+application-secret.properties

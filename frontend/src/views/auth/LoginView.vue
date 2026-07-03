@@ -35,7 +35,7 @@ async function iniciarSesion() {
       password: form.password
     })
     
-    authStore.login(respuesta.data)
+    authStore.login(respuesta.data.usuario, respuesta.data.token)
 
     if (authStore.isAdmin()) {
       router.push('/admin')

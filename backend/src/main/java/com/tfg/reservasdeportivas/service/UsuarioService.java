@@ -48,7 +48,9 @@ public class UsuarioService {
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         Usuario guardado = usuarioRepository.save(usuario);
-        return modelMapper.map(guardado, UsuarioDTO.class);
+        UsuarioDTO mappedUser = modelMapper.map(guardado, UsuarioDTO.class);
+        mappedUser.setPassword(null);
+        return mappedUser;
     }
 
     @Transactional(readOnly = true)

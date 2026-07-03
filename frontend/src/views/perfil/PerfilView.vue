@@ -4,13 +4,10 @@ import { useAuthStore } from '@/stores/auth'
 import { MAPA_DEPORTES, NIVELES_OPCIONES, DEPORTES_ENUM } from '@/utils/constants'
 import api from '@/services/api'
 import { obtenerIniciales } from '@/utils/formatters'
+import { toast } from 'vue3-toastify'
 
 const authStore = useAuthStore()
 
-const exitoPerfil = ref('')
-const errorPerfil = ref('')
-const exitoPassword = ref('')
-const errorPassword = ref('')
 const guardando = ref(false)
 const cambiandoPassword = ref(false)
 const resenas = ref([])
@@ -79,14 +76,11 @@ function cargarDatos() {
 }
 
 async function subirFoto(event) {
-  errorPerfil.value = ''
-  exitoPerfil.value = ''
-  
   const file = event.target.files[0]
   if (!file) return
 
-  if (file.size > 2 * 1024 * 1024) {
-    errorPerfil.value = 'La imagen es demasiado grande. El tamaño máximo es 2MB.'
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('La imagen es demasiado grande. El tamaño máximo es 5MB.')
     return
   }
 
@@ -98,9 +92,10 @@ async function subirFoto(event) {
       const res = await api.put(`/usuarios/${authStore.usuario.id}`, formPerfil)
       authStore.login(res.data)
       Object.assign(formOriginal, formPerfil)
-      exitoPerfil.value = 'Foto actualizada correctamente.'
+      toast.success('Foto actualizada correctamente.')
     } catch (err) {
-      errorPerfil.value = 'No se ha podido actualizar la foto.'
+      console.error(err)
+      toast.error(err.response?.data?.message || err.message || 'No se ha podido actualizar la foto.')
     }
   }
   reader.readAsDataURL(file)
@@ -112,24 +107,24 @@ async function eliminarFoto() {
     const res = await api.put(`/usuarios/${authStore.usuario.id}`, formPerfil)
     authStore.login(res.data)
     Object.assign(formOriginal, formPerfil)
-    exitoPerfil.value = 'Foto eliminada correctamente.'
+    toast.success('Foto eliminada correctamente.')
   } catch (err) {
-    errorPerfil.value = 'No se ha podido eliminar la foto.'
+    console.error(err)
+    toast.error('No se ha podido eliminar la foto.')
   }
 }
 
 async function guardarPerfil() {
-  exitoPerfil.value = ''
-  errorPerfil.value = ''
   guardando.value = true
 
   try {
     const res = await api.put(`/usuarios/${authStore.usuario.id}`, formPerfil)
     authStore.login(res.data)
     Object.assign(formOriginal, formPerfil)
-    exitoPerfil.value = 'Perfil actualizado correctamente.'
+    toast.success('Perfil actualizado correctamente.')
   } catch (err) {
-    errorPerfil.value = 'No se ha podido actualizar el perfil.'
+    console.error(err)
+    toast.error('No se ha podido actualizar el perfil.')
   } finally {
     guardando.value = false
   }
@@ -147,21 +142,20 @@ async function alternarNotificacion(tipo) {
     authStore.login(res.data)
     Object.assign(formOriginal, formPerfil)
   } catch (err) {
+    console.error(err)
+    toast.error('Error al actualizar las notificaciones.')
     if (tipo === 'partidas') formPerfil.notificacionesPartidas = !formPerfil.notificacionesPartidas
     if (tipo === 'chat') formPerfil.notificacionesChat = !formPerfil.notificacionesChat
   }
 }
 
 async function cambiarPassword() {
-  exitoPassword.value = ''
-  errorPassword.value = ''
-
   if (!formPassword.contrasenaActual || !formPassword.nuevaContrasena || !formPassword.confirmarContrasena) {
-    errorPassword.value = 'Rellena todos los campos de contraseña.'
+    toast.warning('Rellena todos los campos de contraseña.')
     return
   }
   if (formPassword.nuevaContrasena !== formPassword.confirmarContrasena) {
-    errorPassword.value = 'Las contraseñas nuevas no coinciden.'
+    toast.error('Las contraseñas nuevas no coinciden.')
     return
   }
   if (formPassword.nuevaContrasena.length < 4) {
@@ -175,16 +169,13 @@ async function cambiarPassword() {
       contrasenaActual: formPassword.contrasenaActual,
       nuevaContrasena: formPassword.nuevaContrasena
     })
-    exitoPassword.value = 'Contraseña cambiada con éxito.'
     formPassword.contrasenaActual = ''
     formPassword.nuevaContrasena = ''
     formPassword.confirmarContrasena = ''
+    toast.success('Contraseña actualizada correctamente.')
   } catch (err) {
-    if (err.response?.status === 401) {
-      errorPassword.value = 'La contraseña actual no es correcta.'
-    } else {
-      errorPassword.value = 'Ha ocurrido un error al cambiar la contraseña.'
-    }
+    console.error(err)
+    toast.error(err.response?.data?.message || 'Error al cambiar la contraseña.')
   } finally {
     cambiandoPassword.value = false
   }
@@ -239,8 +230,7 @@ async function cambiarPassword() {
             <p class="text-sm text-gray-500">Actualiza tu información personal</p>
           </div>
 
-          <div v-if="exitoPerfil" class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">{{ exitoPerfil }}</div>
-          <div v-if="errorPerfil" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{{ errorPerfil }}</div>
+
 
           <form @submit.prevent="guardarPerfil" class="space-y-5">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -332,8 +322,7 @@ async function cambiarPassword() {
             <p class="text-sm text-gray-500">Gestiona tu contraseña y acceso</p>
           </div>
 
-          <div v-if="exitoPassword" class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">{{ exitoPassword }}</div>
-          <div v-if="errorPassword" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{{ errorPassword }}</div>
+
 
           <form @submit.prevent="cambiarPassword" class="space-y-5">
             <div>

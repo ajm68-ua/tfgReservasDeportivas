@@ -1,6 +1,7 @@
 package com.tfg.reservasdeportivas.controller;
 
 import com.tfg.reservasdeportivas.dto.UsuarioDTO;
+import com.tfg.reservasdeportivas.security.JwtTokenProvider;
 import com.tfg.reservasdeportivas.service.UsuarioService;
 import com.tfg.reservasdeportivas.exception.EmailAlreadyExistsException;
 import com.tfg.reservasdeportivas.exception.InvalidCredentialsException;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -19,21 +21,40 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @PostMapping("/registro")
-    public ResponseEntity<UsuarioDTO> registrar(@Valid @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<?> registrar(@Valid @RequestBody UsuarioDTO dto) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.registrar(dto));
+            UsuarioDTO usuario = usuarioService.registrar(dto);
+            String token = jwtTokenProvider.generarToken(usuario.getId(), usuario.getEmail(), usuario.getRol().name());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("usuario", usuario);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (EmailAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", e.getMessage()));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioDTO> login(@RequestBody UsuarioDTO dto) {
+    public ResponseEntity<?> login(@RequestBody UsuarioDTO dto) {
         try {
-            return ResponseEntity.ok(usuarioService.login(dto));
+            UsuarioDTO usuario = usuarioService.login(dto);
+            String token = jwtTokenProvider.generarToken(usuario.getId(), usuario.getEmail(), usuario.getRol().name());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("usuario", usuario);
+
+            return ResponseEntity.ok(response);
         } catch (InvalidCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Correo o contraseña incorrectos"));
         }
     }
 
@@ -54,12 +75,13 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}/password")
-    public ResponseEntity<Void> cambiarPassword(@PathVariable Integer id, @RequestBody Map<String, String> passwords) {
+    public ResponseEntity<?> cambiarPassword(@PathVariable Integer id, @RequestBody Map<String, String> passwords) {
         try {
             usuarioService.cambiarPassword(id, passwords);
             return ResponseEntity.ok().build();
         } catch (InvalidCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
@@ -75,9 +97,10 @@ public class UsuarioController {
         try {
             return ResponseEntity.ok(usuarioService.asignarAdministrador(centroId, body.get("email")));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", e.getMessage()));
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
         }
     }
 
@@ -87,9 +110,10 @@ public class UsuarioController {
             usuarioService.revocarAdministrador(centroId, email);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", e.getMessage()));
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
         }
     }
 }
