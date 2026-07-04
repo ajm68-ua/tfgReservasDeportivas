@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/centros", "/api/centros/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/pistas", "/api/pistas/centro/**", "/api/pistas/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/ws-chat/**").permitAll()
 
                 .requestMatchers("/api/usuarios/admin-centro/**").hasRole("ADMINISTRADOR_CENTRO")
                 .requestMatchers(HttpMethod.PUT, "/api/centros/**").hasRole("ADMINISTRADOR_CENTRO")

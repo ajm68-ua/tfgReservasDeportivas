@@ -147,7 +147,7 @@ public class ReservaService {
             BigDecimal cuota = precioTotal.divide(BigDecimal.valueOf(capacidad), 2, java.math.RoundingMode.HALF_UP);
             
             if (organizador.getSaldo().compareTo(cuota) < 0) {
-                throw new IllegalArgumentException("Saldo insuficiente para pagar tu parte al organizar la partida abierta.");
+                throw new IllegalArgumentException("Saldo insuficiente!");
             }
             organizador.setSaldo(organizador.getSaldo().subtract(cuota));
             usuarioRepository.save(organizador);
