@@ -39,6 +39,10 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('usuario', JSON.stringify(userWithoutFoto))
     } catch (e) {
       console.error('Error actualizando perfil desde el servidor:', e)
+      if (e.response && (e.response.status === 401 || e.response.status === 403)) {
+        logout()
+        window.location.href = '/login'
+      }
     }
   }
 
