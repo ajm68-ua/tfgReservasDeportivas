@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
@@ -171,6 +172,20 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.isLogged()) {
+    next({ name: 'login' })
+  } else if (to.meta.rol && authStore.usuario?.rol !== to.meta.rol) {
+    next({ name: 'home' })
+  } else if (!to.meta.requiresAuth && authStore.isLogged() && (to.name === 'login' || to.name === 'registro')) {
+    next({ name: 'home' })
+  } else {
+    next()
+  }
 })
 
 export default router

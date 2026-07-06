@@ -12,6 +12,7 @@ import com.tfg.reservasdeportivas.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
@@ -23,7 +24,8 @@ public class DataSeeder {
     public CommandLineRunner initData(
             CentroDeportivoRepository centroRepo,
             PistaRepository pistaRepo,
-            UsuarioRepository usuarioRepo) {
+            UsuarioRepository usuarioRepo,
+            PasswordEncoder passwordEncoder) {
         return args -> {
             if (centroRepo.count() > 0) {
                 System.out.println("La base de datos ya contiene datos.");
@@ -118,7 +120,7 @@ public class DataSeeder {
             admin1.setNombre("Admin");
             admin1.setApellidos("Elche");
             admin1.setEmail("admin1@ejemplo.com");
-            admin1.setPassword("1234"); 
+            admin1.setPassword(passwordEncoder.encode("1234"));
             admin1.setRol(RolUsuario.ADMINISTRADOR_CENTRO);
             admin1.setCentro(centro1);
             usuarioRepo.save(admin1);
@@ -127,7 +129,7 @@ public class DataSeeder {
             admin2.setNombre("Admin");
             admin2.setApellidos("Alicante");
             admin2.setEmail("admin2@ejemplo.com");
-            admin2.setPassword("1234");
+            admin2.setPassword(passwordEncoder.encode("1234"));
             admin2.setRol(RolUsuario.ADMINISTRADOR_CENTRO);
             admin2.setCentro(centro2);
             usuarioRepo.save(admin2);
@@ -136,7 +138,7 @@ public class DataSeeder {
             deportista1.setNombre("Alejandro");
             deportista1.setApellidos("Jiménez");
             deportista1.setEmail("alejandro@ejemplo.com");
-            deportista1.setPassword("1234");
+            deportista1.setPassword(passwordEncoder.encode("1234"));
             deportista1.setRol(RolUsuario.DEPORTISTA);
             deportista1.setNivel(Nivel.INTERMEDIO);
             deportista1.setCiudad("Elche");
@@ -146,7 +148,7 @@ public class DataSeeder {
             deportista2.setNombre("Miguel");
             deportista2.setApellidos("Martínez");
             deportista2.setEmail("miguel@ejemplo.com");
-            deportista2.setPassword("1234");
+            deportista2.setPassword(passwordEncoder.encode("1234"));
             deportista2.setRol(RolUsuario.DEPORTISTA);
             deportista2.setNivel(Nivel.AVANZADO);
             deportista2.setCiudad("Alicante");

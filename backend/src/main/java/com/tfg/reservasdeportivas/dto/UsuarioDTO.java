@@ -37,9 +37,7 @@ public class UsuarioDTO implements Serializable {
     private Nivel nivel;
     private RolUsuario rol;
     private LocalDateTime fechaRegistro;
-    private BigDecimal valoracionMedia;
     private BigDecimal saldo = BigDecimal.ZERO;
-
     private String descripcion;
     private Boolean notificacionesPartidas = true;
     private Boolean notificacionesChat = true;
@@ -82,9 +80,6 @@ public class UsuarioDTO implements Serializable {
 
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
-
-    public BigDecimal getValoracionMedia() { return valoracionMedia; }
-    public void setValoracionMedia(BigDecimal valoracionMedia) { this.valoracionMedia = valoracionMedia; }
 
     public BigDecimal getSaldo() { return saldo; }
     public void setSaldo(BigDecimal saldo) { this.saldo = saldo; }

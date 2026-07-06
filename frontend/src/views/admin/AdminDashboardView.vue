@@ -138,8 +138,8 @@ async function subirFotoPerfil(event) {
   const file = event.target.files[0]
   if (!file) return
 
-  if (file.size > 2 * 1024 * 1024) {
-    toast.error('La imagen es demasiado grande. El tamaño máximo es 2MB.')
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('La imagen es demasiado grande. El tamaño máximo es 5MB.')
     return
   }
 
@@ -193,8 +193,8 @@ async function subirFotoCentro(event) {
   const file = event.target.files[0]
   if (!file) return
 
-  if (file.size > 2 * 1024 * 1024) {
-    toast.error('La imagen es demasiado grande. El tamaño máximo es 2MB.')
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('La imagen es demasiado grande. El tamaño máximo es 5MB.')
     return
   }
 

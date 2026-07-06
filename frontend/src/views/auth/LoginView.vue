@@ -3,12 +3,12 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
 import { useAuthStore } from '@/stores/auth'
+import { toast } from 'vue3-toastify'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const cargando = ref(false)
-const errorMensaje = ref('')
 
 const form = reactive({
   email: '',
@@ -24,9 +24,8 @@ function validar() {
 }
 
 async function iniciarSesion() {
-  errorMensaje.value = ''
   const error = validar()
-  if (error) { errorMensaje.value = error; return }
+  if (error) { toast.error(error); return }
 
   cargando.value = true
   try {
@@ -35,7 +34,7 @@ async function iniciarSesion() {
       password: form.password
     })
     
-    authStore.login(respuesta.data)
+    authStore.login(respuesta.data.usuario, respuesta.data.token)
 
     if (authStore.isAdmin()) {
       router.push('/admin')
@@ -45,9 +44,9 @@ async function iniciarSesion() {
     
   } catch (err) {
     if (err.response?.status === 401) {
-      errorMensaje.value = 'Correo o contraseña incorrectos.'
+      toast.error('Correo o contraseña incorrectos.')
     } else {
-      errorMensaje.value = 'Ha ocurrido un error. Inténtalo de nuevo.'
+      toast.error('Ha ocurrido un error. Inténtalo de nuevo.')
     }
   } finally {
     cargando.value = false
@@ -59,16 +58,9 @@ async function iniciarSesion() {
   <div class="bg-white font-sans flex items-center justify-center min-h-[calc(100vh-64px)] px-6 py-10">
     <div class="w-full max-w-sm">
 
-      <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-1 text-center">¡Hola de nuevo!</h1>
-      <p class="text-gray-500 text-sm mb-6 text-center">Inicia sesión con tu cuenta</p>
-
-      <div v-if="errorMensaje" class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-500 rounded-xl px-3 py-2.5 text-sm mb-5">
-        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" stroke-width="2"/>
-          <line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/>
-          <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"/>
-        </svg>
-        {{ errorMensaje }}
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Iniciar Sesión</h2>
+        <p class="text-sm text-gray-500 mt-1">Introduce tus datos para iniciar sesión</p>
       </div>
 
       <div class="mb-4">

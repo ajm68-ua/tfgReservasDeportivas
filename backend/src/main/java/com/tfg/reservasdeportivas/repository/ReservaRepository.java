@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     List<Reserva> findByPistaIdAndFecha(Integer pistaId, LocalDate fecha);
+    List<Reserva> findByPistaCentroIdAndFechaOrderByHoraInicioAsc(Integer centroId, LocalDate fecha);
     @Query("SELECT DISTINCT r FROM Reserva r LEFT JOIN r.participantes p WHERE r.organizador.id = :usuarioId OR p.id = :usuarioId ORDER BY r.fecha DESC, r.horaInicio DESC")
     List<Reserva> findByOrganizadorIdOrderByFechaDescHoraInicioDesc(@Param("usuarioId") Integer usuarioId);
     List<Reserva> findByEstadoPago(EstadoPago estadoPago);

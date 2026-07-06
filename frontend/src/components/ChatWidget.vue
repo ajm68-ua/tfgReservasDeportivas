@@ -103,7 +103,7 @@ const conectarWebSocket = (matchId) => {
     return
   }
 
-  const socket = new SockJS('http://localhost:8080/ws-chat')
+  const socket = new SockJS('/ws-chat')
   stompClient = new Client({
     webSocketFactory: () => socket,
     reconnectDelay: 5000,

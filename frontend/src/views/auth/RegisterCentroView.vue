@@ -2,11 +2,11 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
+import { toast } from 'vue3-toastify'
 
 const router = useRouter()
 
 const cargando = ref(false)
-const errorMensaje = ref('')
 const exitoso = ref(false)
 
 const form = reactive({
@@ -54,9 +54,8 @@ function validar() {
 }
 
 async function registrar() {
-  errorMensaje.value = ''
   const error = validar()
-  if (error) { errorMensaje.value = error; return }
+  if (error) { toast.error(error); return }
 
   cargando.value = true
   try {
@@ -80,11 +79,11 @@ async function registrar() {
     setTimeout(() => router.push({ name: 'home' }), 2500)
   } catch (err) {
     if (err.response?.status === 409) {
-      errorMensaje.value = 'El correo o el centro ya están registrados.'
+      toast.error('El correo o el centro ya están registrados.')
     } else if (err.response?.status === 400) {
-      errorMensaje.value = 'Revisa los campos, el formato de los datos es inválido.'
+      toast.error('Revisa los campos, el formato de los datos es inválido.')
     } else {
-      errorMensaje.value = 'Ha ocurrido un error. Inténtalo de nuevo.'
+      toast.error('Ha ocurrido un error. Inténtalo de nuevo.')
     }
   } finally {
     cargando.value = false
@@ -105,16 +104,9 @@ async function registrar() {
       </div>
 
       <template v-else>
-        <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-1">Registra tu centro</h1>
-        <p class="text-gray-500 text-sm mb-5">Date de alta como administrador de las instalaciones</p>
-
-        <div v-if="errorMensaje" class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-500 rounded-xl px-3 py-2.5 text-sm mb-4">
-          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" stroke-width="2"/>
-            <line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/>
-            <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"/>
-          </svg>
-          {{ errorMensaje }}
+        <div class="mb-6">
+          <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-1">Registra tu centro</h1>
+          <p class="text-gray-500 text-sm">Date de alta como administrador de las instalaciones</p>
         </div>
 
         <h3 class="text-sm font-bold text-gray-900 mb-3 border-b border-gray-100 pb-2">1. Datos del Gerente</h3>

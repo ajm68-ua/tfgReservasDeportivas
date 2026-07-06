@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
+import { toast } from 'vue3-toastify'
 
 const router = useRouter()
 
@@ -10,7 +11,6 @@ import { NIVELES_OPCIONES } from '@/utils/constants'
 const niveles = NIVELES_OPCIONES
 
 const cargando = ref(false)
-const errorMensaje = ref('')
 const exitoso = ref(false)
 
 const form = reactive({
@@ -53,9 +53,8 @@ function validar() {
 }
 
 async function registrar() {
-  errorMensaje.value = ''
   const error = validar()
-  if (error) { errorMensaje.value = error; return }
+  if (error) { toast.error(error); return }
 
   cargando.value = true
   try {
@@ -72,9 +71,9 @@ async function registrar() {
     setTimeout(() => router.push({ name: 'login' }), 2500)
   } catch (err) {
     if (err.response?.status === 409) {
-      errorMensaje.value = 'Ese correo ya está registrado.'
+      toast.error('Ese correo ya está registrado.')
     } else {
-      errorMensaje.value = 'Ha ocurrido un error. Inténtalo de nuevo.'
+      toast.error('Ha ocurrido un error. Inténtalo de nuevo.')
     }
   } finally {
     cargando.value = false
@@ -95,16 +94,9 @@ async function registrar() {
       </div>
 
       <template v-else>
-        <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-1">Crea tu cuenta</h1>
-        <p class="text-gray-500 text-sm mb-5">Introduce tus datos para empezar a reservar</p>
-
-        <div v-if="errorMensaje" class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-500 rounded-xl px-3 py-2.5 text-sm mb-4">
-          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" stroke-width="2"/>
-            <line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/>
-            <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"/>
-          </svg>
-          {{ errorMensaje }}
+        <div class="mb-6">
+          <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-1">Crea tu cuenta</h1>
+          <p class="text-gray-500 text-sm">Introduce tus datos para empezar a reservar</p>
         </div>
 
         <div class="grid grid-cols-2 gap-3 mb-3">

@@ -3,20 +3,31 @@ import { ref } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
   const storedUser = localStorage.getItem('usuario')
+  const storedToken = localStorage.getItem('token')
   const usuario = ref(storedUser ? JSON.parse(storedUser) : null)
+  const token = ref(storedToken || null)
 
-  const isLogged = () => usuario.value !== null
+  const isLogged = () => usuario.value !== null && token.value !== null
   const isAdmin = () => usuario.value?.rol === 'ADMINISTRADOR_CENTRO'
   const isDeportista = () => usuario.value?.rol === 'DEPORTISTA'
 
-  function login(userData) {
+  function login(userData, jwtToken) {
     usuario.value = userData
-    localStorage.setItem('usuario', JSON.stringify(userData))
+
+    const { foto, ...userWithoutFoto } = userData
+    localStorage.setItem('usuario', JSON.stringify(userWithoutFoto))
+
+    if (jwtToken) {
+      token.value = jwtToken
+      localStorage.setItem('token', jwtToken)
+    }
   }
 
   function logout() {
     usuario.value = null
+    token.value = null
     localStorage.removeItem('usuario')
+    localStorage.removeItem('token')
   }
 
   async function refreshUser(api) {
@@ -24,14 +35,20 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const res = await api.get(`/usuarios/${usuario.value.id}`)
       usuario.value = res.data
-      localStorage.setItem('usuario', JSON.stringify(res.data))
+      const { foto, ...userWithoutFoto } = res.data
+      localStorage.setItem('usuario', JSON.stringify(userWithoutFoto))
     } catch (e) {
       console.error('Error actualizando perfil desde el servidor:', e)
+      if (e.response && (e.response.status === 401 || e.response.status === 403)) {
+        logout()
+        window.location.href = '/login'
+      }
     }
   }
 
   return {
     usuario,
+    token,
     isLogged,
     isAdmin,
     isDeportista,

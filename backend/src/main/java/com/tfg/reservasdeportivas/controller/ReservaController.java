@@ -24,6 +24,16 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.obtenerReservasPorPistaYFecha(pistaId, fecha));
     }
 
+    @GetMapping("/centro/{centroId}")
+    public ResponseEntity<List<ReservaDTO>> obtenerReservasPorCentroYFecha(
+            @PathVariable Integer centroId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        if (fecha == null) {
+            fecha = LocalDate.now();
+        }
+        return ResponseEntity.ok(reservaService.obtenerReservasPorCentroYFecha(centroId, fecha));
+    }
+
     @GetMapping("/abiertas")
     public ResponseEntity<List<ReservaDTO>> obtenerPartidasAbiertas() {
         return ResponseEntity.ok(reservaService.obtenerPartidasAbiertas());
@@ -31,11 +41,7 @@ public class ReservaController {
 
     @PostMapping
     public ResponseEntity<ReservaDTO> crearReserva(@RequestBody ReservaDTO dto) {
-        try {
-            return ResponseEntity.ok(reservaService.crearReserva(dto));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(reservaService.crearReserva(dto));
     }
 
     @GetMapping("/usuario/{usuarioId}")
@@ -45,79 +51,47 @@ public class ReservaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservaDTO> obtenerReservaPorId(@PathVariable Integer id) {
-        try {
-            return ResponseEntity.ok(reservaService.obtenerReservaPorId(id));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(reservaService.obtenerReservaPorId(id));
     }
 
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelarReserva(@PathVariable Integer id) {
-        try {
-            reservaService.cancelarReserva(id);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservaService.cancelarReserva(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}/pagar")
     public ResponseEntity<Void> pagarReserva(@PathVariable Integer id) {
-        try {
-            reservaService.pagarReserva(id);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservaService.pagarReserva(id);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/unirse")
     public ResponseEntity<?> unirsePartidaAbierta(@PathVariable Integer id, @RequestParam Integer usuarioId) {
-        try {
-            reservaService.unirsePartidaAbierta(id, usuarioId);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
-        }
+        reservaService.unirsePartidaAbierta(id, usuarioId);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/abandonar")
     public ResponseEntity<?> abandonarPartidaAbierta(@PathVariable Integer id, @RequestParam Integer usuarioId) {
-        try {
-            reservaService.abandonarPartidaAbierta(id, usuarioId);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
-        }
+        reservaService.abandonarPartidaAbierta(id, usuarioId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ReservaDTO> modificarReserva(@PathVariable Integer id, @RequestBody ReservaDTO dto) {
-        try {
-            return ResponseEntity.ok(reservaService.modificarReserva(id, dto));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(reservaService.modificarReserva(id, dto));
     }
 
     @PutMapping("/{id}/reactivar")
     public ResponseEntity<Void> reactivarReserva(@PathVariable Integer id) {
-        try {
-            reservaService.reactivarReserva(id);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservaService.reactivarReserva(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarReserva(@PathVariable Integer id) {
-        try {
-            reservaService.eliminarReserva(id);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        reservaService.eliminarReserva(id);
+        return ResponseEntity.ok().build();
     }
 }
