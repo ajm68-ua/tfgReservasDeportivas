@@ -1,4 +1,4 @@
-# 🏟️ Reservas Deportivas
+# Reservas Deportivas
 
 Sistema web de reservas de pistas deportivas desarrollado como Trabajo de Fin de Grado (TFG).
 
