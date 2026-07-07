@@ -18,8 +18,8 @@ const imagenFallback = IMAGEN_FALLBACK_PISTA
   <div class="flex flex-col sm:flex-row bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 group">
     <div class="w-full sm:w-56 h-48 sm:h-auto flex-shrink-0 relative overflow-hidden bg-gray-100">
       <img 
-        v-if="pista.centroFoto" 
-        :src="pista.centroFoto" 
+        v-if="pista.foto || pista.centroFoto" 
+        :src="pista.foto || pista.centroFoto" 
         class="w-full h-full object-cover" 
         alt="Foto Centro" 
       />

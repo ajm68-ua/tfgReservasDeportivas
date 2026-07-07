@@ -34,6 +34,7 @@ public class ReservaDTO implements Serializable {
     private Integer capacidadMaxima;
     private Deporte deporte;
     private String centroFoto;
+    private String pistaFoto;
     private List<UsuarioDTO> jugadoresDetalle = new ArrayList<>();
 
     public ReservaDTO() {
@@ -95,6 +96,9 @@ public class ReservaDTO implements Serializable {
 
     public String getCentroFoto() { return centroFoto; }
     public void setCentroFoto(String centroFoto) { this.centroFoto = centroFoto; }
+
+    public String getPistaFoto() { return pistaFoto; }
+    public void setPistaFoto(String pistaFoto) { this.pistaFoto = pistaFoto; }
 
     public List<UsuarioDTO> getJugadoresDetalle() { return jugadoresDetalle; }
     public void setJugadoresDetalle(List<UsuarioDTO> jugadoresDetalle) { this.jugadoresDetalle = jugadoresDetalle; }

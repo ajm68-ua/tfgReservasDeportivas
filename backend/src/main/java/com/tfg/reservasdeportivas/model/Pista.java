@@ -21,6 +21,9 @@ public class Pista {
     @Enumerated(EnumType.STRING)
     private Deporte deporte;
 
+    @Column(columnDefinition = "TEXT")
+    private String foto;
+
     @Column(name = "precio_por_hora", precision = 10, scale = 2)
     private BigDecimal precioPorHora;
 
@@ -62,6 +65,14 @@ public class Pista {
 
     public void setDeporte(Deporte deporte) {
         this.deporte = deporte;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
     public BigDecimal getPrecioPorHora() {

@@ -32,7 +32,8 @@ const form = reactive({
   deporte: DEPORTES_KEYS[0],
   precioPorHora: 10.0,
   capacidadMaxima: 4,
-  disponible: true
+  disponible: true,
+  foto: ''
 })
 
 onMounted(async () => {
@@ -103,6 +104,7 @@ function abrirModalNueva() {
   form.precioPorHora = 10.0
   form.capacidadMaxima = 4
   form.disponible = true
+  form.foto = ''
   mostrarModal.value = true
 }
 
@@ -114,6 +116,7 @@ function abrirModalEditar(pista) {
   form.precioPorHora = pista.precioPorHora
   form.capacidadMaxima = pista.capacidadMaxima
   form.disponible = pista.disponible
+  form.foto = pista.foto || ''
   mostrarModal.value = true
 }
 
@@ -143,6 +146,22 @@ async function guardarPista() {
   } finally {
     guardando.value = false
   }
+}
+
+function procesarFotoPista(event) {
+  const file = event.target.files[0]
+  if (!file) return
+
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('La imagen es demasiado grande. El tamaño máximo es 5MB.')
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    form.foto = e.target.result
+  }
+  reader.readAsDataURL(file)
 }
 
 async function eliminarPista(id) {
@@ -248,6 +267,22 @@ async function toggleDisponibilidad(pista) {
             </select>
           </div>
 
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Foto de la Pista</label>
+            <div class="flex items-center gap-4">
+              <div v-if="form.foto" class="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200">
+                <img :src="form.foto" class="w-full h-full object-cover" />
+                <button type="button" @click="form.foto = ''" class="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow hover:bg-gray-100">
+                  <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+              </div>
+              <div class="flex-1">
+                <input type="file" accept="image/*" @change="procesarFotoPista" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition" />
+                <p class="text-xs text-gray-500 mt-2">Opcional. Si no seleccionas ninguna, se usará la del centro.</p>
+              </div>
+            </div>
+          </div>
+          
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Precio / hora (€)</label>

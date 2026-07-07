@@ -50,8 +50,8 @@ const barraColor = computed(() => {
     
     <div class="w-full sm:w-56 h-48 sm:h-auto flex-shrink-0 relative overflow-hidden bg-gray-100">
       <img 
-        v-if="partida.centroFoto" 
-        :src="partida.centroFoto" 
+        v-if="partida.pistaFoto || partida.centroFoto" 
+        :src="partida.pistaFoto || partida.centroFoto" 
         class="w-full h-full object-cover" 
         alt="Foto Centro" 
       />
