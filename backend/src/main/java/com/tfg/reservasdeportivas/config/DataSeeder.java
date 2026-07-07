@@ -86,6 +86,7 @@ public class DataSeeder {
             pista1.setPrecioPorHora(new BigDecimal("30.00"));
             pista1.setCapacidadMaxima(22);
             pista1.setDisponible(true);
+            pista1.setFoto("https://images.unsplash.com/photo-1529900294037-007eb372a6b5");
             pistaRepo.save(pista1);
 
             Pista pista2 = new Pista();
@@ -95,6 +96,7 @@ public class DataSeeder {
             pista2.setPrecioPorHora(new BigDecimal("20.00"));
             pista2.setCapacidadMaxima(12);
             pista2.setDisponible(true);
+            pista2.setFoto("https://images.unsplash.com/photo-1519861531473-9200262188bf");
             pistaRepo.save(pista2);
 
             Pista pista3 = new Pista();
@@ -104,6 +106,7 @@ public class DataSeeder {
             pista3.setPrecioPorHora(new BigDecimal("15.00"));
             pista3.setCapacidadMaxima(4);
             pista3.setDisponible(true);
+            pista3.setFoto("https://images.unsplash.com/photo-1554068865-24cecd4e34b8");
             pistaRepo.save(pista3);
 
             Pista pista4 = new Pista();
@@ -113,6 +116,7 @@ public class DataSeeder {
             pista4.setPrecioPorHora(new BigDecimal("10.00"));
             pista4.setCapacidadMaxima(4);
             pista4.setDisponible(true);
+            pista4.setFoto("https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0");
             pistaRepo.save(pista4);
 
             // USUARIOS

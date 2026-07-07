@@ -15,6 +15,7 @@ public class PistaDTO implements Serializable {
     private String centroFoto;
     private String nombre;
     private Deporte deporte;
+    private String foto;
     private BigDecimal precioPorHora;
     private Integer capacidadMaxima;
     private Boolean disponible;
@@ -42,6 +43,9 @@ public class PistaDTO implements Serializable {
 
     public Deporte getDeporte() { return deporte; }
     public void setDeporte(Deporte deporte) { this.deporte = deporte; }
+
+    public String getFoto() { return foto; }
+    public void setFoto(String foto) { this.foto = foto; }
 
     public BigDecimal getPrecioPorHora() { return precioPorHora; }
     public void setPrecioPorHora(BigDecimal precioPorHora) { this.precioPorHora = precioPorHora; }
