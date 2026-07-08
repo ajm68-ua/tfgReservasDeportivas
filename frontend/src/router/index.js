@@ -11,25 +11,19 @@ import CentrosListView from '@/views/centros/CentrosListView.vue'
 import CentroDetailView from '@/views/centros/CentroDetailView.vue'
 
 import PistasListView from '@/views/pistas/PistasListView.vue'
-import PistaDetailView from '@/views/pistas/PistaDetailView.vue'
 
 import ReservaCreateView from '@/views/reservas/ReservaCreateView.vue'
-import ReservasListView from '@/views/reservas/ReservasListView.vue'
-import ReservaDetailView from '@/views/reservas/ReservaDetailView.vue'
 import MisReservasView from '@/views/reservas/MisReservasView.vue'
 import ReservaEditView from '@/views/reservas/ReservaEditView.vue'
 import ReservaPagoView from '@/views/reservas/ReservaPagoView.vue'
 import PartidasAbiertasView from '@/views/partidas/PartidasAbiertasView.vue'
 
-import ResenasView from '@/views/resenas/ResenasView.vue'
 
-import NotificacionesView from '@/views/notificaciones/NotificacionesView.vue'
 
 import PerfilView from '@/views/perfil/PerfilView.vue'
 
 import AdminDashboardView from '@/views/admin/AdminDashboardView.vue'
 import AdminPistasView from '@/views/admin/AdminPistasView.vue'
-import AdminReservasView from '@/views/admin/AdminReservasView.vue'
 
 const routes = [
   {
@@ -76,28 +70,10 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/pistas/:id',
-    name: 'pista-detail',
-    component: PistaDetailView,
-    meta: { requiresAuth: true },
-  },
-  {
     path: '/reservas/nueva',
     name: 'reserva-create',
     component: ReservaCreateView,
     meta: { requiresAuth: true, rol: 'DEPORTISTA' },
-  },
-  {
-    path: '/reservas',
-    name: 'reservas',
-    component: ReservasListView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/reservas/:id',
-    name: 'reserva-detail',
-    component: ReservaDetailView,
-    meta: { requiresAuth: true },
   },
   {
     path: '/mis-reservas',
@@ -125,18 +101,6 @@ const routes = [
   },
 
   {
-    path: '/reservas/:id/resenas',
-    name: 'resenas',
-    component: ResenasView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/notificaciones',
-    name: 'notificaciones',
-    component: NotificacionesView,
-    meta: { requiresAuth: true },
-  },
-  {
     path: '/perfil',
     name: 'perfil',
     component: PerfilView,
@@ -159,12 +123,6 @@ const routes = [
     path: '/admin/pistas',
     name: 'admin-pistas',
     component: AdminPistasView,
-    meta: { requiresAuth: true, rol: 'ADMINISTRADOR_CENTRO' },
-  },
-  {
-    path: '/admin/reservas',
-    name: 'admin-reservas',
-    component: AdminReservasView,
     meta: { requiresAuth: true, rol: 'ADMINISTRADOR_CENTRO' },
   },
 ]

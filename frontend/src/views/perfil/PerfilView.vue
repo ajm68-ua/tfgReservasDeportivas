@@ -266,14 +266,9 @@ async function cambiarPassword() {
               </div>
               <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1">Ciudad</label>
-                <select v-model="formPerfil.ciudad" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition appearance-none">
-                  <option value="" disabled>Selecciona tu ciudad</option>
-                  <option value="Madrid">Madrid</option>
-                  <option value="Barcelona">Barcelona</option>
-                  <option value="Valencia">Valencia</option>
-                  <option value="Elche">Elche</option>
-                  <option value="Sevilla">Sevilla</option>
-                </select>
+                <div class="relative">
+                  <input v-model="formPerfil.ciudad" type="text" placeholder="Introduce tu ciudad" class="w-full bg-gray-50 border border-gray-200 rounded-lg pl-3 py-2 text-sm text-gray-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" />
+                </div>
               </div>
             </div>
 

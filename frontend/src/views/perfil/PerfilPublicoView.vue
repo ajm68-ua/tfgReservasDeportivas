@@ -19,6 +19,7 @@ const cargando = ref(true)
 const errorMensaje = ref('')
 const usuario = ref(null)
 const resenas = ref([])
+const puedeResenar = ref(false)
 
 const mostrarModalResena = ref(false)
 const enviandoResena = ref(false)
@@ -38,6 +39,15 @@ const cargarDatos = async () => {
     ])
     usuario.value = userRes.data
     resenas.value = resenasRes.data
+
+    if (authStore.usuario && authStore.usuario.id != userId) {
+      try {
+        const eligibleRes = await api.get(`/resenas/usuario/pueden-resenar/${authStore.usuario.id}/${userId}`)
+        puedeResenar.value = eligibleRes.data === true
+      } catch {
+        puedeResenar.value = false
+      }
+    }
   } catch (error) {
     console.error('Error al cargar perfil público:', error)
     errorMensaje.value = 'No se pudo cargar el perfil del usuario. Es posible que no exista.'
@@ -216,12 +226,18 @@ const formatDate = (dateString) => {
             </div>
             
             <button 
-              v-if="authStore.usuario && authStore.usuario.id != userId && !resenas.some(r => r.evaluadorId === authStore.usuario.id)"
+              v-if="puedeResenar && authStore.usuario && authStore.usuario.id != userId && !resenas.some(r => r.evaluadorId === authStore.usuario.id)"
               @click="abrirModalNuevo"
               class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition hover:shadow-md"
             >
               <i class="fas fa-pen mr-2"></i>Dejar una reseña
             </button>
+            <span
+              v-else-if="authStore.usuario && authStore.usuario.id != userId && !puedeResenar && !resenas.some(r => r.evaluadorId === authStore.usuario.id)"
+              class="text-xs text-gray-400 italic"
+            >
+              Debes compartir una partida con el usuario para poder dejar una reseña
+            </span>
           </div>
 
           <div v-if="resenas.length > 0" class="flex flex-col gap-4">

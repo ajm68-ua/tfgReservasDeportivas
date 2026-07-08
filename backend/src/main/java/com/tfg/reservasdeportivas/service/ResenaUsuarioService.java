@@ -29,8 +29,6 @@ public class ResenaUsuarioService {
     @Autowired
     private ReservaRepository reservaRepository;
 
-    @Autowired
-    private UsuarioService usuarioService;
 
     public List<ResenaUsuarioDTO> obtenerResenasPorEvaluado(Integer evaluadoId) {
         return resenaUsuarioRepository.findByEvaluadoIdOrderByFechaCreacionDesc(evaluadoId).stream()
@@ -40,6 +38,14 @@ public class ResenaUsuarioService {
 
     @Transactional
     public ResenaUsuarioDTO crearResena(ResenaUsuarioDTO dto) {
+        if (dto.getEvaluadorId().equals(dto.getEvaluadoId())) {
+            throw new IllegalArgumentException("No puedes dejar una reseña sobre ti mismo.");
+        }
+
+        if (!reservaRepository.hanCompartidoReserva(dto.getEvaluadorId(), dto.getEvaluadoId())) {
+            throw new IllegalArgumentException("Solo puedes dejar una reseña a usuarios con los que hayas compartido una partida.");
+        }
+
         Usuario evaluador = usuarioRepository.findById(dto.getEvaluadorId())
                 .orElseThrow(() -> new IllegalArgumentException("Evaluador no encontrado"));
         Usuario evaluado = usuarioRepository.findById(dto.getEvaluadoId())
@@ -62,6 +68,11 @@ public class ResenaUsuarioService {
         return modelMapper.map(guardada, ResenaUsuarioDTO.class);
     }
 
+    @Transactional(readOnly = true)
+    public boolean hanCompartidoReserva(Integer usuario1Id, Integer usuario2Id) {
+        return reservaRepository.hanCompartidoReserva(usuario1Id, usuario2Id);
+    }
+
     @Transactional
     public ResenaUsuarioDTO modificarResena(Integer id, ResenaUsuarioDTO dto) {
         ResenaUsuario resena = resenaUsuarioRepository.findById(id)
@@ -80,7 +91,6 @@ public class ResenaUsuarioService {
         ResenaUsuario resena = resenaUsuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
 
-        Integer evaluadoId = resena.getEvaluado().getId();
         resenaUsuarioRepository.delete(resena);
 
 

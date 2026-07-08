@@ -98,6 +98,11 @@ export const useNotificationStore = defineStore('notifications', {
         this.stompClient.deactivate()
         this.stompClient = null
       }
+    },
+
+    clearNotificaciones() {
+      this.notificaciones = []
+      this.desconectarWebSocket()
     }
   }
 })

@@ -51,7 +51,8 @@ const procesarPago = async () => {
     
     if (authStore.usuario && authStore.usuario.saldo !== undefined) {
       authStore.usuario.saldo -= importeAPagar.value
-      localStorage.setItem('usuario', JSON.stringify(authStore.usuario))
+      const { foto, ...userWithoutFoto } = authStore.usuario
+      localStorage.setItem('usuario', JSON.stringify(userWithoutFoto))
     }
 
     toast.success("Pago procesado correctamente")

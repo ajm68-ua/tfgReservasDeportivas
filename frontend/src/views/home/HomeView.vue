@@ -377,18 +377,11 @@ onMounted(async () => {
         <p class="text-gray-400 text-base mb-8 max-w-md mx-auto leading-relaxed">
           Explora las pistas disponibles en tu zona y empieza a jugar hoy mismo.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <router-link to="/pistas">
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3.5 px-10 rounded-full transition">
-              Buscar pistas
-            </button>
-          </router-link>
-          <router-link to="/partidas">
-            <button class="bg-white/10 hover:bg-white/20 text-white font-semibold text-sm py-3.5 px-10 rounded-full transition border border-white/20">
-              Ver partidas abiertas
-            </button>
-          </router-link>
-        </div>
+        <router-link to="/pistas">
+          <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3.5 px-10 rounded-full transition">
+            Buscar pistas
+          </button>
+        </router-link>
       </div>
     </section>
 

@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
-import com.tfg.reservasdeportivas.model.ResenaUsuario;
-
 @Service
 public class UsuarioService {
 

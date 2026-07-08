@@ -28,6 +28,11 @@ public class ResenaUsuarioController {
         return ResponseEntity.ok(resenaUsuarioService.obtenerResenasPorEvaluado(id));
     }
 
+    @GetMapping("/pueden-resenar/{usuario1Id}/{usuario2Id}")
+    public ResponseEntity<Boolean> puedenResenar(@PathVariable Integer usuario1Id, @PathVariable Integer usuario2Id) {
+        return ResponseEntity.ok(resenaUsuarioService.hanCompartidoReserva(usuario1Id, usuario2Id));
+    }
+
     @PostMapping
     public ResponseEntity<ResenaUsuarioDTO> crearResena(@Valid @RequestBody ResenaUsuarioDTO dto) {
         return ResponseEntity.ok(resenaUsuarioService.crearResena(dto));

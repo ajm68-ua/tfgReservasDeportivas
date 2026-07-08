@@ -28,6 +28,11 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     localStorage.removeItem('usuario')
     localStorage.removeItem('token')
+
+    import('./notifications').then(({ useNotificationStore }) => {
+      const notiStore = useNotificationStore()
+      notiStore.clearNotificaciones()
+    })
   }
 
   async function refreshUser(api) {
