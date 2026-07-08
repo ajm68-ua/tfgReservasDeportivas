@@ -75,6 +75,8 @@ public class PistaService {
         pista.setDeporte(dto.getDeporte());
         pista.setPrecioPorHora(dto.getPrecioPorHora());
         pista.setCapacidadMaxima(dto.getCapacidadMaxima());
+        pista.setFoto(dto.getFoto());
+        
         if (dto.getDisponible() != null) {
             pista.setDisponible(dto.getDisponible());
         }

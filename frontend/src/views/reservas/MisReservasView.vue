@@ -7,6 +7,7 @@ import { toast } from 'vue3-toastify'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 import ReservaCard from '@/components/ReservaCard.vue'
 
 const router = useRouter()
@@ -15,6 +16,23 @@ const authStore = useAuthStore()
 const reservas = ref([])
 const cargando = ref(true)
 const isProcessing = ref(false)
+
+const modalConfirm = ref({
+  isOpen: false,
+  title: '',
+  message: '',
+  type: 'info',
+  confirmText: 'Confirmar',
+  action: null
+})
+
+function abrirModalConfirm(opciones) {
+  modalConfirm.value = { ...modalConfirm.value, ...opciones, isOpen: true }
+}
+
+function cerrarModalConfirm() {
+  modalConfirm.value.isOpen = false
+}
 
 onMounted(async () => {
   if (!authStore.isLogged()) {
@@ -40,8 +58,17 @@ async function cargarReservas() {
 
 async function cancelarReserva(id) {
   if (isProcessing.value) return
-  if (!confirm('¿Estás seguro de que quieres cancelar esta reserva?')) return
+  abrirModalConfirm({
+    title: 'Cancelar reserva',
+    message: '¿Estás seguro de que quieres cancelar esta reserva?',
+    type: 'danger',
+    confirmText: 'Cancelar reserva',
+    action: () => procesarCancelarReserva(id)
+  })
+}
 
+async function procesarCancelarReserva(id) {
+  cerrarModalConfirm()
   isProcessing.value = true
   try {
     await api.put(`/reservas/${id}/cancelar`)
@@ -61,8 +88,17 @@ async function cancelarReserva(id) {
 
 async function abandonarPartida(id) {
   if (isProcessing.value) return
-  if (!confirm('¿Quieres abandonar esta partida? Se te devolverá la parte proporcional de la pista a tu saldo.')) return
+  abrirModalConfirm({
+    title: 'Abandonar partida',
+    message: '¿Quieres abandonar esta partida? Se te devolverá la parte proporcional de la pista a tu saldo.',
+    type: 'danger',
+    confirmText: 'Abandonar',
+    action: () => procesarAbandonarPartida(id)
+  })
+}
 
+async function procesarAbandonarPartida(id) {
+  cerrarModalConfirm()
   isProcessing.value = true
   try {
     await api.post(`/reservas/${id}/abandonar?usuarioId=${authStore.usuario.id}`)
@@ -81,8 +117,17 @@ async function abandonarPartida(id) {
 
 async function eliminarDefinitivamente(id) {
   if (isProcessing.value) return
-  if (!confirm('¿Estás seguro de que quieres eliminar esta reserva del historial? Esta acción no se puede deshacer.')) return
+  abrirModalConfirm({
+    title: 'Eliminar del historial',
+    message: '¿Estás seguro de que quieres eliminar esta reserva del historial? Esta acción no se puede deshacer.',
+    type: 'danger',
+    confirmText: 'Eliminar',
+    action: () => procesarEliminarDefinitivamente(id)
+  })
+}
 
+async function procesarEliminarDefinitivamente(id) {
+  cerrarModalConfirm()
   isProcessing.value = true
   try {
     await api.delete(`/reservas/${id}`)
@@ -145,5 +190,15 @@ async function reReservar(reserva) {
         />
       </div>
     </main>
+
+    <ConfirmModal 
+      :show="modalConfirm.isOpen"
+      :title="modalConfirm.title"
+      :message="modalConfirm.message"
+      :type="modalConfirm.type"
+      :confirm-text="modalConfirm.confirmText"
+      @confirm="modalConfirm.action && modalConfirm.action()"
+      @cancel="cerrarModalConfirm"
+    />
   </div>
 </template>

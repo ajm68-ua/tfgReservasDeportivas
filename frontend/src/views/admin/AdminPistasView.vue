@@ -72,7 +72,7 @@ async function cargarReservasHoy() {
 }
 
 function conectarWebSocket() {
-  const socket = new SockJS('http://localhost:8080/ws-reservas')
+  const socket = new SockJS('/ws-chat')
   stompClient = new Client({
     webSocketFactory: () => socket,
     reconnectDelay: 5000,

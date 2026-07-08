@@ -7,6 +7,7 @@ import { toast } from 'vue3-toastify'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 import PartidaAbiertaCard from '@/components/PartidaAbiertaCard.vue'
 import { DEPORTES_ENUM, NIVELES_ENUM } from '@/utils/constants'
 
@@ -23,6 +24,23 @@ const ocultarLlenas = ref(false)
 
 const deportes = DEPORTES_ENUM
 const niveles = NIVELES_ENUM
+
+const modalConfirm = ref({
+  isOpen: false,
+  title: '',
+  message: '',
+  type: 'info',
+  confirmText: 'Confirmar',
+  action: null
+})
+
+function abrirModalConfirm(opciones) {
+  modalConfirm.value = { ...modalConfirm.value, ...opciones, isOpen: true }
+}
+
+function cerrarModalConfirm() {
+  modalConfirm.value.isOpen = false
+}
 
 onMounted(async () => {
   if (!authStore.isLogged()) {
@@ -50,15 +68,30 @@ async function unirsePartida(partidaId) {
   if (joiningId.value) return
   
   const partida = partidas.value.find(p => p.id === partidaId)
-  let confirmMessage = '¿Quieres unirte a esta partida? Se te cobrará la parte proporcional de la pista de tu saldo.'
+  
+  let opcionesModal = {
+    title: 'Unirse a partida',
+    message: '¿Quieres unirte a esta partida? Se te cobrará la parte proporcional de la pista de tu saldo.',
+    type: 'info',
+    confirmText: 'Unirme',
+    action: () => procesarUnirsePartida(partidaId)
+  }
   
   if (partida && authStore.usuario && partida.nivel !== authStore.usuario.nivel) {
-    confirmMessage = '¿Estás seguro que quieres unirte? El nivel de juego solicitado no corresponde a tu nivel.\n\nSe te cobrará la parte proporcional de la pista de tu saldo.'
+    opcionesModal = {
+      title: 'Aviso de nivel de juego',
+      message: 'El nivel de juego solicitado no corresponde a tu nivel.\n\n¿Estás seguro que quieres unirte?\nSe te cobrará la parte proporcional de la pista de tu saldo.',
+      type: 'warning',
+      confirmText: 'Unirme de todos modos',
+      action: () => procesarUnirsePartida(partidaId)
+    }
   }
 
-  const confirmacion = confirm(confirmMessage)
-  if (!confirmacion) return
+  abrirModalConfirm(opcionesModal)
+}
 
+async function procesarUnirsePartida(partidaId) {
+  cerrarModalConfirm()
   joiningId.value = partidaId
   try {
     await api.post(`/reservas/${partidaId}/unirse?usuarioId=${authStore.usuario.id}`)
@@ -79,9 +112,17 @@ async function unirsePartida(partidaId) {
 async function abandonarPartida(partidaId) {
   if (joiningId.value) return
   
-  const confirmacion = confirm('¿Quieres abandonar esta partida? Se te devolverá la parte proporcional de la pista a tu saldo.')
-  if (!confirmacion) return
+  abrirModalConfirm({
+    title: 'Abandonar partida',
+    message: '¿Quieres abandonar esta partida? Se te devolverá la parte proporcional de la pista a tu saldo.',
+    type: 'danger',
+    confirmText: 'Abandonar',
+    action: () => procesarAbandonarPartida(partidaId)
+  })
+}
 
+async function procesarAbandonarPartida(partidaId) {
+  cerrarModalConfirm()
   joiningId.value = partidaId
   try {
     await api.post(`/reservas/${partidaId}/abandonar?usuarioId=${authStore.usuario.id}`)
@@ -179,5 +220,15 @@ function limpiarFiltros() {
       </template>
 
     </main>
+
+    <ConfirmModal 
+      :show="modalConfirm.isOpen"
+      :title="modalConfirm.title"
+      :message="modalConfirm.message"
+      :type="modalConfirm.type"
+      :confirm-text="modalConfirm.confirmText"
+      @confirm="modalConfirm.action && modalConfirm.action()"
+      @cancel="cerrarModalConfirm"
+    />
   </div>
 </template>

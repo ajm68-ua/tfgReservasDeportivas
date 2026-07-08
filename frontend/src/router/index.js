@@ -73,7 +73,7 @@ const routes = [
     path: '/reservas/nueva',
     name: 'reserva-create',
     component: ReservaCreateView,
-    meta: { requiresAuth: true, rol: 'DEPORTISTA' },
+    meta: { requiresAuth: true },
   },
   {
     path: '/mis-reservas',
@@ -97,7 +97,7 @@ const routes = [
     path: '/partidas',
     name: 'partidas',
     component: PartidasAbiertasView,
-    meta: { requiresAuth: true, rol: 'DEPORTISTA' },
+    meta: { requiresAuth: true },
   },
 
   {
@@ -132,17 +132,15 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const authStore = useAuthStore()
 
   if (to.meta.requiresAuth && !authStore.isLogged()) {
-    next({ name: 'login' })
+    return { name: 'login' }
   } else if (to.meta.rol && authStore.usuario?.rol !== to.meta.rol) {
-    next({ name: 'home' })
+    return { name: 'home' }
   } else if (!to.meta.requiresAuth && authStore.isLogged() && (to.name === 'login' || to.name === 'registro')) {
-    next({ name: 'home' })
-  } else {
-    next()
+    return { name: 'home' }
   }
 })
 
