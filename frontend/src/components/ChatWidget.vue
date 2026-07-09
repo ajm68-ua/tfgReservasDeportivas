@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import SockJS from 'sockjs-client/dist/sockjs'
@@ -32,11 +32,12 @@ const handleAbrirChat = async (e) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (authStore.isLogged()) {
-    cargarPartidas()
+    await cargarPartidas()
   }
   window.addEventListener('abrir-chat', handleAbrirChat)
+  window.addEventListener('reserva-actualizada', manejarReservaActualizada)
 })
 
 onUnmounted(() => {
@@ -44,6 +45,7 @@ onUnmounted(() => {
     stompClient.deactivate()
   }
   window.removeEventListener('abrir-chat', handleAbrirChat)
+  window.removeEventListener('reserva-actualizada', manejarReservaActualizada)
 })
 
 const alternarWidget = () => {
@@ -170,19 +172,6 @@ const manejarReservaActualizada = async () => {
   }
 }
 
-onMounted(async () => {
-  if (authStore.isLogged()) {
-    await cargarPartidas()
-  }
-  window.addEventListener('reserva-actualizada', manejarReservaActualizada)
-})
-
-onUnmounted(() => {
-  if (stompClient) {
-    stompClient.deactivate()
-  }
-  window.removeEventListener('reserva-actualizada', manejarReservaActualizada)
-})
 
 </script>
 

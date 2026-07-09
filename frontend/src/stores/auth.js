@@ -9,7 +9,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLogged = () => usuario.value !== null && token.value !== null
   const isAdmin = () => usuario.value?.rol === 'ADMINISTRADOR_CENTRO'
-  const isDeportista = () => usuario.value?.rol === 'DEPORTISTA'
 
   function login(userData, jwtToken) {
     usuario.value = userData
@@ -56,7 +55,6 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     isLogged,
     isAdmin,
-    isDeportista,
     login,
     logout,
     refreshUser

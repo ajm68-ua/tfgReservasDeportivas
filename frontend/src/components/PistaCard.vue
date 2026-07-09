@@ -1,7 +1,6 @@
 <script setup>
 import { defineProps } from 'vue'
 import { RouterLink } from 'vue-router'
-import { IMAGEN_FALLBACK_PISTA } from '@/utils/constants'
 import { formatearDinero } from '@/utils/formatters'
 
 defineProps({
@@ -11,7 +10,6 @@ defineProps({
   }
 })
 
-const imagenFallback = IMAGEN_FALLBACK_PISTA
 </script>
 
 <template>

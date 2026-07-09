@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { MAPA_DEPORTES, NIVELES_OPCIONES, DEPORTES_ENUM } from '@/utils/constants'
+import { NIVELES_OPCIONES } from '@/utils/constants'
 import api from '@/services/api'
 import { obtenerIniciales } from '@/utils/formatters'
 import { toast } from 'vue3-toastify'
@@ -159,7 +159,7 @@ async function cambiarPassword() {
     return
   }
   if (formPassword.nuevaContrasena.length < 4) {
-    errorPassword.value = 'La nueva contraseña debe tener al menos 4 caracteres.'
+    toast.error('La nueva contraseña debe tener al menos 4 caracteres.')
     return
   }
 

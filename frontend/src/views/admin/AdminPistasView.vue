@@ -9,7 +9,7 @@ import { Client } from '@stomp/stompjs'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import AdminPistaCard from '@/components/AdminPistaCard.vue'
-import { DEPORTES_ARRAY, MAPA_DEPORTES } from '@/utils/constants'
+import { MAPA_DEPORTES } from '@/utils/constants'
 
 const router = useRouter()
 const authStore = useAuthStore()

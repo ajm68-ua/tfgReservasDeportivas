@@ -2,10 +2,9 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/services/api'
-import PageHeader from '@/components/ui/PageHeader.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
-import { NIVELES_OPCIONES, MAPA_DEPORTES } from '@/utils/constants'
+import { NIVELES_OPCIONES } from '@/utils/constants'
 
 import { useAuthStore } from '@/stores/auth'
 import { obtenerIniciales, formatearFecha } from '@/utils/formatters'
@@ -130,9 +129,6 @@ const getPuntuacion = (resena) => {
   return p > 5 ? 5 : (p < 0 ? 0 : p)
 }
 
-const getEstrellasVacias = (resena) => {
-  return 5 - getPuntuacion(resena)
-}
 
 const inicialesUsuario = computed(() => {
   if (!usuario.value) return ''

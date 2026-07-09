@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { toast } from 'vue3-toastify'
 import CentroDeportivoCard from '@/components/CentroDeportivoCard.vue'
@@ -8,7 +7,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const router = useRouter()
+
 
 const centros = ref([])
 const cargando = ref(true)
